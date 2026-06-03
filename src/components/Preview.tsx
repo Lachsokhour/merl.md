@@ -25,37 +25,34 @@ function rehypeMermaid() {
 export default function Preview({ content, theme }: PreviewProps) {
   const initialized = useRef(false)
 
-  const mermaidConfig = {
-    startOnLoad: false,
-    theme: (theme === 'dark' ? 'dark' : 'default') as 'dark' | 'default',
-    themeVariables: {
-      background: 'transparent',
-      ...(theme === 'dark'
-        ? {
-            primaryColor: '#818cf8',
-            primaryTextColor: '#f1f5f9',
-            primaryBorderColor: '#6366f1',
-            lineColor: '#818cf8',
-            secondaryColor: '#475569',
-            tertiaryColor: '#1e293b',
-            textColor: '#94a3b8',
-            edgeLabelBackground: '#334155',
-            clusterBkg: '#1e293b',
-            clusterBorder: '#475569',
-            titleColor: '#f1f5f9',
-          }
-        : {}),
-    },
-  }
-
-  if (!initialized.current) {
-    mermaid.initialize(mermaidConfig)
-    initialized.current = true
-  }
-
   useEffect(() => {
     if (!content.trim()) return
+    const mermaidConfig = {
+      startOnLoad: false,
+      theme: (theme === 'dark' ? 'dark' : 'default') as 'dark' | 'default',
+      themeVariables: {
+        background: 'transparent',
+        ...(theme === 'dark'
+          ? {
+              primaryColor: '#818cf8',
+              primaryTextColor: '#f1f5f9',
+              primaryBorderColor: '#6366f1',
+              lineColor: '#818cf8',
+              secondaryColor: '#475569',
+              tertiaryColor: '#1e293b',
+              textColor: '#94a3b8',
+              edgeLabelBackground: '#334155',
+              clusterBkg: '#1e293b',
+              clusterBorder: '#475569',
+              titleColor: '#f1f5f9',
+            }
+          : {}),
+      },
+    }
     mermaid.initialize(mermaidConfig)
+    if (!initialized.current) {
+      initialized.current = true
+    }
     const timer = requestAnimationFrame(() => {
       document.querySelectorAll('.preview .mermaid').forEach(el => {
         if (el.hasAttribute('data-source')) {
@@ -65,7 +62,7 @@ export default function Preview({ content, theme }: PreviewProps) {
         }
         el.removeAttribute('data-processed')
       })
-      mermaid.run()
+      mermaid.run({ querySelector: '.preview .mermaid' })
     })
     return () => cancelAnimationFrame(timer)
   }, [content, theme])
