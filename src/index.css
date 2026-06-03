@@ -565,6 +565,7 @@ body {
   background: var(--surface2);
   border-radius: var(--radius-sm);
   color: var(--text2);
+  font-size: 0.95em;
 }
 
 .preview blockquote::before {
@@ -618,7 +619,7 @@ body {
 
 .preview blockquote[data-alert] > p.alert-title {
   font-weight: 500;
-  font-size: 0.65em;
+  font-size: 0.7em;
   letter-spacing: 0.04em;
   margin-bottom: 0.5em;
   color: var(--alert-color);
@@ -684,7 +685,7 @@ body {
 
 .preview blockquote[data-alert] > p:first-child {
   font-weight: 700;
-  font-size: 0.65em;
+  font-size: 0.7em;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-bottom: 0.5em;

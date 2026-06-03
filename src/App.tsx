@@ -331,6 +331,7 @@ export default function App() {
       background: ${surface2};
       border-radius: 8px;
       color: ${text2};
+      font-size: 0.95em;
     }
     blockquote::before {
       content: '';
@@ -361,7 +362,7 @@ export default function App() {
       background-repeat: no-repeat;
       background-position: center;
     }
-    blockquote[data-alert] > p.alert-title { font-weight: 700; font-size: 0.65em; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.5em; color: var(--alert-color); }
+    blockquote[data-alert] > p.alert-title { font-weight: 700; font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.5em; color: var(--alert-color); }
     blockquote[data-alert] > p:last-child { margin-bottom: 0; }
     blockquote[data-alert="NOTE"] { --alert-color: #3b82f6; }
     blockquote[data-alert="NOTE"] .alert-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E"); }
