@@ -280,7 +280,7 @@ export default function App() {
     const previewEl = previewRef.current
     if (!previewEl) return
     const clone = previewEl.cloneNode(true) as HTMLElement
-    clone.querySelectorAll('.block-header, .mermaid-header').forEach(el => el.remove())
+    clone.querySelectorAll('.block-header, .mermaid-header, .scroll-to-top').forEach(el => el.remove())
     const innerHtml = clone.innerHTML
     const pageTitle = fileName?.replace(/\.\w+$/, '') || 'document'
     const isDark = theme === 'dark'
@@ -309,6 +309,7 @@ export default function App() {
       line-height: 1.75;
       font-size: 16px;
       -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
     }
     h1, h2, h3, h4, h5, h6 {
       margin-top: 1.8em;
@@ -323,6 +324,8 @@ export default function App() {
     h4 { font-size: 1.1em; }
     h5 { font-size: 1em; color: ${text2}; }
     h6 { font-size: 0.9em; color: ${text2}; font-weight: 400; }
+    :is(h1,h2,h3,h4,h5,h6):target { animation: heading-highlight 2s ease-out; }
+    @keyframes heading-highlight { 0% { background-color: color-mix(in srgb, ${accent} 20%, transparent); } 100% { background-color: transparent; } }
     p { margin: 0.85em 0; }
     a { color: ${accent}; text-decoration: none; font-weight: 500; }
     a:hover { text-decoration: underline; }

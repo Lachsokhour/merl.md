@@ -441,6 +441,33 @@ body {
   margin-top: 0;
 }
 
+.scroll-to-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  z-index: 100;
+}
+
+.scroll-to-top:hover {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
 /* ── Headings ── */
 .preview h1,
 .preview h2,
@@ -497,6 +524,15 @@ body {
 .preview h4 { font-size: 1.1em; }
 .preview h5 { font-size: 1em; color: var(--text2); }
 .preview h6 { font-size: 0.9em; color: var(--text2); font-weight: 400; }
+
+.preview :is(h1, h2, h3, h4, h5, h6):target {
+  animation: heading-highlight 2s ease-out;
+}
+
+@keyframes heading-highlight {
+  0% { background-color: color-mix(in srgb, var(--accent) 20%, transparent); }
+  100% { background-color: transparent; }
+}
 
 /* ── Paragraphs ── */
 .preview p {
@@ -620,7 +656,6 @@ body {
 .preview blockquote[data-alert] > p.alert-title {
   font-weight: 700;
   font-size: 0.7em;
-  text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-bottom: 0.5em;
   color: var(--alert-color);

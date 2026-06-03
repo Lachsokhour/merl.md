@@ -35,11 +35,12 @@
 
 ## Mermaid
 - Custom rehype plugin (`rehypeMermaid`) transforms `<code class="language-mermaid">` to `<div class="mermaid">` in HAST tree before `rehypeHighlight`
-- `mermaid.initialize()` called inside `useEffect`, not during render
-- `mermaid.run({ querySelector: '.preview .mermaid' })` — v11 requires explicit querySelector
-- Raw source saved to `data-source` attribute for theme-switch survival
-- Mermaid reload via per-block `tick` counter + local `useEffect`. On click: `oldEl.replaceWith(newEl)` to bypass mermaid v11's in-memory processed node Set, then `mermaid.run({ nodes: [newEl] })`.
-- `Preview` wrapped in `React.memo` so it doesn't re-render on split pane resize — prevents React from resetting `.mermaid` textContent to source.
+- `mermaid.initialize()` called at **module level** (import time) with default config — ensures init runs before any component mount
+- `Preview` component's `useEffect([theme])` updates `mermaid.initialize()` config when theme changes (dark vs light themeVariables)
+- `MermaidBlock` (defined inline in `Preview.tsx`) handles per-block rendering: `mermaid.run({ nodes: [el] })` in its own `useEffect([tick, theme])`
+- On reload (tick > 0): `oldEl.replaceWith(newEl)` to bypass mermaid v11's in-memory processed-node Set, then `mermaid.run({ nodes: [newEl] })`
+- Raw source saved to `data-source` attribute on first mount, survives theme-switch re-renders
+- `Preview` wrapped in `React.memo` so it doesn't re-render on split pane resize — prevents React from resetting `.mermaid` textContent to source
 - Mermaid config uses `startOnLoad: false`, `background: 'transparent'` in themeVariables
 
 ## Popovers (FontSettings, AccentPicker)

@@ -1,10 +1,19 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react'
-import { FileText, Copy, Check, RotateCw } from 'lucide-react'
+import { createPortal } from 'react-dom'
+import { FileText, Copy, Check, RotateCw, ArrowUp } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
+import rehypeSlug from 'rehype-slug'
 import { visit } from 'unist-util-visit'
 import mermaid from 'mermaid'
+
+const MERMAID_DEFAULT_CONFIG = {
+  startOnLoad: false,
+  theme: 'default' as const,
+  themeVariables: { background: 'transparent' },
+}
+mermaid.initialize(MERMAID_DEFAULT_CONFIG)
 
 interface PreviewProps {
   content: string
@@ -85,7 +94,7 @@ function CodeBlock({ children }: { children: React.ReactNode }) {
   )
 }
 
-function MermaidBlock({ children }: { children: React.ReactNode }) {
+function MermaidBlock({ children, theme }: { children: React.ReactNode; theme: 'light' | 'dark' }) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const [tick, setTick] = useState(0)
 
@@ -94,20 +103,27 @@ function MermaidBlock({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    if (tick === 0) return
     const wrap = wrapRef.current
     if (!wrap) return
-    const oldEl = wrap.querySelector('.mermaid')
-    if (!oldEl) return
-    const src = oldEl.getAttribute('data-source')
-    if (!src) return
-    const newEl = document.createElement('div')
-    newEl.className = 'mermaid'
-    newEl.textContent = src
-    newEl.setAttribute('data-source', src)
-    oldEl.replaceWith(newEl)
-    mermaid.run({ nodes: [newEl] }).catch(() => {})
-  }, [tick])
+    let el = wrap.querySelector<HTMLElement>('.mermaid')
+    if (!el) return
+
+    if (tick > 0) {
+      const src = el.getAttribute('data-source')
+      if (!src) return
+      const newEl = document.createElement('div')
+      newEl.className = 'mermaid'
+      newEl.textContent = src
+      newEl.setAttribute('data-source', src)
+      el.replaceWith(newEl)
+      el = newEl
+    } else {
+      el.setAttribute('data-source', el.textContent || '')
+    }
+
+    el.removeAttribute('data-processed')
+    mermaid.run({ nodes: [el] }).catch(err => console.warn('Mermaid error:', err))
+  }, [tick, theme])
 
   return (
     <div className="mermaid-wrap" ref={wrapRef}>
@@ -121,12 +137,26 @@ function MermaidBlock({ children }: { children: React.ReactNode }) {
       {children}
     </div>
   )
-}
+  }
 
 export default React.memo(function Preview({ content, theme }: PreviewProps) {
+  const previewRef = useRef<HTMLDivElement>(null)
+  const [showScrollTop, setShowScrollTop] = useState(false)
+
   useEffect(() => {
-    if (!content.trim()) return
-    const mermaidConfig = {
+    function onScroll() { setShowScrollTop((previewRef.current?.scrollTop ?? 0) > 300) }
+    const el = previewRef.current
+    if (!el) return
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const scrollToTop = useCallback(() => {
+    previewRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
+  useEffect(() => {
+    mermaid.initialize({
       startOnLoad: false,
       theme: (theme === 'dark' ? 'dark' : 'default') as 'dark' | 'default',
       themeVariables: {
@@ -160,21 +190,8 @@ export default React.memo(function Preview({ content, theme }: PreviewProps) {
               titleColor: '#1e293b',
             }),
       },
-    }
-    mermaid.initialize(mermaidConfig)
-    const timer = requestAnimationFrame(() => {
-      document.querySelectorAll('.preview .mermaid').forEach(el => {
-        if (el.hasAttribute('data-source')) {
-          el.textContent = el.getAttribute('data-source')
-        } else {
-          el.setAttribute('data-source', el.textContent || '')
-        }
-        el.removeAttribute('data-processed')
-      })
-      mermaid.run({ querySelector: '.preview .mermaid' }).catch(err => console.warn('Mermaid render error:', err))
     })
-    return () => cancelAnimationFrame(timer)
-  }, [content, theme])
+  }, [theme])
 
   if (!content.trim()) {
     return (
@@ -188,10 +205,10 @@ export default React.memo(function Preview({ content, theme }: PreviewProps) {
   }
 
   return (
-    <div className="preview">
+    <div className="preview" ref={previewRef}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeAlert, rehypeMermaid, rehypeHighlight]}
+        rehypePlugins={[rehypeAlert, rehypeMermaid, rehypeSlug, rehypeHighlight]}
         components={{
           blockquote: ({ node, children }) => {
             const alertType = (node as any)?.properties?.alertType
@@ -207,7 +224,7 @@ export default React.memo(function Preview({ content, theme }: PreviewProps) {
           },
           div: ({ className, children, ...rest }) => {
             if (className === 'mermaid-wrap') {
-              return <MermaidBlock>{children}</MermaidBlock>
+              return <MermaidBlock theme={theme}>{children}</MermaidBlock>
             }
             return <div className={className} {...rest}>{children}</div>
           },
@@ -224,6 +241,12 @@ export default React.memo(function Preview({ content, theme }: PreviewProps) {
       >
         {content}
       </ReactMarkdown>
+      {showScrollTop && createPortal(
+        <button className="scroll-to-top" onClick={scrollToTop} title="Scroll to top">
+          <ArrowUp size={18} />
+        </button>,
+        document.body
+      )}
     </div>
   )
 })
