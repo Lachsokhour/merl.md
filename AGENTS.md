@@ -1,0 +1,48 @@
+# AGENTS.md — Best Practices for this project
+
+## Commands
+- Build: `npm run build` (tsc -b && vite build)
+- Dev: `npm run dev`
+- No test/lint/typecheck commands configured
+
+## Code conventions
+- React 19 + TypeScript, no external state library
+- CSS variables for theming (`--accent`, `--bg`, `--text`, etc.)
+- `color-mix(in srgb, var(--accent) X%, var(--surface))` for accent-tinted surfaces
+- All user settings persisted to localStorage with `merl.md.` prefix key
+- Dark/light theme via `data-theme` attribute on `<html>`
+- Google Fonts loaded dynamically via a single `<link>` element with id `merl-google-fonts`
+- Prefer `useCallback` for handlers, `useMemo` for derived values
+
+## File patterns
+- Components in `src/components/`, PascalCase
+- CSS in `src/index.css` (single file, no modules)
+- Font definitions in `src/fonts.ts`
+- Icons from `lucide-react` (tree-shakeable named imports)
+
+## Responsive breakpoints (in sync)
+- ≥1024px: side-by-side split panes, full toolbar labels
+- 768–1023px: side-by-side, icon-only toolbar
+- <768px: tabbed editor/preview, icon-only toolbar
+- <420px: ultra-compact
+
+## Mermaid
+- Custom rehype plugin (`rehypeMermaid`) transforms `<code class="language-mermaid">` to `<div class="mermaid">` in HAST tree before `rehypeHighlight`
+- `mermaid.initialize()` called inside `useEffect`, not during render
+- `mermaid.run({ querySelector: '.preview .mermaid' })` — v11 requires explicit querySelector
+- Raw source saved to `data-source` attribute for theme-switch survival
+- Mermaid config uses `startOnLoad: false`, `background: 'transparent'` in themeVariables
+
+## Popovers (FontSettings, AccentPicker)
+- Rendered via `createPortal()` to `document.body` to escape overflow clipping
+- `position: fixed` with inline styles calculated from `getBoundingClientRect()`
+- Button center relative to viewport width determines left-align vs right-align:
+  - center > viewport/2 → right-align (panel right edge = button right edge)
+  - center ≤ viewport/2 → left-align (panel left edge = button left edge)
+- Both values clamped to viewport bounds (8px padding)
+- Dismissed on mousedown outside panel or button
+
+## Editor
+- `forwardRef` to expose `<textarea>` for cursor-aware paste
+- Drag-and-drop: `dragCounter` ref pattern to prevent enter/leave flickering on nested children; reads `.md` files via `FileReader`, clears old content
+- Paste via `navigator.clipboard.readText()`, inserts at `selectionStart/selectionEnd`

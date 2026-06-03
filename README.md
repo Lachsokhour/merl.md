@@ -12,7 +12,10 @@ A lightweight, bilingual (English/Khmer) markdown previewer with live rendering,
 - **Custom accent color** — 12 preset swatches + custom color picker; affects links, checkboxes, inline code, header underlines, blockquote bars, and more
 - **Bilingual fonts** — 13 English fonts + 17 Khmer fonts from Google Fonts, loaded dynamically
 - **Preview font zoom** — ±1px adjustable (12–24px), persisted
-- **File operations** — open `.md` files, download rendered HTML (self-contained, theme-aware)
+- **File operations** — open `.md` files (via button or drag-and-drop onto editor pane), download rendered HTML (self-contained, theme-aware)
+- **Paste from clipboard** — paste button in editor pane header inserts at cursor position
+- **Drag-and-drop** — drop `.md` files directly onto the editor pane; old content is cleared, file name shown
+- **Enhanced text selection** — selection highlight uses your custom accent color in both light/dark themes
 - **Responsive** — desktop (side-by-side), tablet (icon-only toolbar), mobile (tabbed editor/preview)
 - **All settings persisted** — fonts, accent color, theme, split position, font size via localStorage
 
@@ -59,6 +62,8 @@ Output goes to `dist/`.
 | Change fonts | Click **Font** — select English and/or Khmer typeface |
 | Zoom preview | Use the **−** / **+** buttons or pinch on mobile |
 | Clear editor | Click the trash icon in the editor pane header |
+| Paste from clipboard | Click the paste icon in the editor pane header (inserts at cursor) |
+| Drag-and-drop file | Drop a `.md` file anywhere on the editor pane |
 | Resize panes | Drag the divider between editor and preview |
 | Mobile tabs | Tap **Editor** or **Preview** to switch views |
 
@@ -75,7 +80,7 @@ flowchart LR
 ```
 ````
 
-The diagram is rendered live in the preview pane and adapts to light/dark mode.
+The diagram is rendered live in the preview pane and adapts to light/dark mode. The diagram source is saved to a `data-source` attribute so it survives theme switches without losing the raw mermaid source.
 
 ### Available Fonts
 
@@ -93,11 +98,11 @@ src/
 ├── types.ts             # TypeScript interfaces
 ├── main.tsx             # React entry point
 └── components/
-    ├── Editor.tsx       # Markdown textarea
-    ├── Preview.tsx      # ReactMarkdown + Mermaid rendering
+    ├── Editor.tsx       # Markdown textarea (forwardRef for cursor-aware paste)
+    ├── Preview.tsx      # ReactMarkdown + custom rehypeMermaid plugin
     ├── Toolbar.tsx      # Top toolbar with all controls
-    ├── FontSettings.tsx # Font selector popover
-    └── AccentPicker.tsx # Accent color picker popover
+    ├── FontSettings.tsx # Font selector popover (portal-based)
+    └── AccentPicker.tsx # Accent color picker popover (portal-based)
 ```
 
 ## Responsive Breakpoints
