@@ -1,6 +1,5 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
-import { ClipboardPaste } from 'lucide-react'
-import { Trash2 } from 'lucide-react'
+import { ClipboardPaste, Trash2, FileUp } from 'lucide-react'
 import Toolbar from './components/Toolbar'
 import Editor from './components/Editor'
 import Preview from './components/Preview'
@@ -94,6 +93,8 @@ export default function App() {
   const previewRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
   const dragging = useRef(false)
+  const [isDragOver, setIsDragOver] = useState(false)
+  const dragCounter = useRef(0)
 
   useEffect(() => { document.documentElement.setAttribute('data-theme', theme) }, [])
   useEffect(() => { save('theme', theme) }, [theme])
@@ -216,6 +217,43 @@ export default function App() {
       setContent(content + text)
     }
   }, [content])
+
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    dragCounter.current += 1
+    if (dragCounter.current === 1) {
+      setIsDragOver(true)
+    }
+  }, [])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    dragCounter.current -= 1
+    if (dragCounter.current === 0) {
+      setIsDragOver(false)
+    }
+  }, [])
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'copy'
+  }, [])
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+    dragCounter.current = 0
+    const files = Array.from(e.dataTransfer.files)
+    const mdFile = files.find(f => f.name.endsWith('.md'))
+    if (!mdFile) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      const text = reader.result as string
+      setContent(text)
+      setFileName(mdFile.name)
+    }
+    reader.readAsText(mdFile)
+  }, [])
 
   const handleDownloadHtml = useCallback(() => {
     const innerHtml = previewRef.current?.innerHTML || ''
@@ -495,8 +533,12 @@ ${innerHtml}
 
       <div ref={containerRef} className="app-container">
         <div
-          className={`pane ${mobileTab !== 'editor' ? 'mobile-hidden' : ''}`}
+          className={`pane ${mobileTab !== 'editor' ? 'mobile-hidden' : ''} ${isDragOver ? 'pane-dragover' : ''}`}
           style={{ width: `${splitPos}%`, flex: 'none' }}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
         >
           <div className="pane-header">
             <span>Editor</span>
@@ -510,7 +552,15 @@ ${innerHtml}
               </button>
             </div>
           </div>
-          <Editor ref={editorRef} value={content} onChange={setContent} />
+          <div className="pane-editor-wrap">
+            <Editor ref={editorRef} value={content} onChange={setContent} />
+            {isDragOver && (
+              <div className="drop-overlay">
+                <FileUp size={40} strokeWidth={1.5} />
+                <span className="drop-overlay-label">Drop .md file here</span>
+              </div>
+            )}
+          </div>
         </div>
 
         <div

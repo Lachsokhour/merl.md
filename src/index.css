@@ -260,6 +260,46 @@ body {
   flex-direction: column;
 }
 
+.pane-editor-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.pane-dragover {
+  outline: 2px dashed var(--accent);
+  outline-offset: -2px;
+}
+
+.drop-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  backdrop-filter: blur(4px);
+  color: var(--accent);
+  z-index: 10;
+  animation: drop-fade-in 0.15s ease-out;
+  pointer-events: none;
+}
+
+.drop-overlay-label {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+@keyframes drop-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .pane-header {
   display: flex;
   align-items: center;
