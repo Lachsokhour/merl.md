@@ -18,6 +18,7 @@
 - Components in `src/components/`, PascalCase
 - CSS in `src/index.css` (single file, no modules)
 - Font definitions in `src/fonts.ts`
+- Version constant in `src/version.ts` (imported from `package.json` equivalence)
 - Icons from `lucide-react` (tree-shakeable named imports)
 
 ## Responsive breakpoints (in sync)

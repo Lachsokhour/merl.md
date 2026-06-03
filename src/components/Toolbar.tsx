@@ -3,6 +3,7 @@ import type { FileHandle } from '../types'
 import FontSettings from './FontSettings'
 import AccentPicker from './AccentPicker'
 import AboutOverlay from './AboutOverlay'
+import { APP_VERSION } from '../version'
 
 interface ToolbarProps {
   theme: 'light' | 'dark'
@@ -57,7 +58,7 @@ export default function Toolbar({
       <div className="toolbar-brand">
         <span className="brand-khmer">មើល .md</span>
         <ChevronRight className="brand-sep" size={18} />
-        <span>merl.md</span>
+        <span>merl.md <small style={{ opacity: 0.5, fontWeight: 400 }}>v{APP_VERSION}</small></span>
         {fileName && <small>{fileName}</small>}
       </div>
 

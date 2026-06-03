@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Info } from 'lucide-react'
+import { APP_VERSION } from '../version'
 
 const PANEL_WIDTH = 260
 const PAD = 8
@@ -95,7 +96,7 @@ export default function AboutOverlay() {
             </div>
 
             <div style={{ marginTop: 4, paddingTop: 10, borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text2)', textAlign: 'center' }}>
-              MIT &middot; Built with React 19 + TypeScript + Vite
+              MIT &middot; v{APP_VERSION} &middot; Built with React 19 + TypeScript + Vite
             </div>
           </div>
         </div>,
