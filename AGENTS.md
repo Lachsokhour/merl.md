@@ -26,11 +26,19 @@
 - <768px: tabbed editor/preview, icon-only toolbar
 - <420px: ultra-compact
 
+## GFM Alerts
+- `remark-gfm` does **not** support `> [!NOTE]` / `> [!WARNING]` / `> [!TIP]` / `> [!IMPORTANT]` / `> [!CAUTION]` — handled by custom rehype plugin (`rehypeAlert`)
+- `rehypeAlert` visits `<blockquote>` hAST nodes, checks first text child for `^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]`, sets `dataAlert` property, and strips the `[!TYPE]` prefix
+- CSS styles each type via `blockquote[data-alert="NOTE"]` etc., using `--alert-color` per type
+- Both `src/index.css` and HTML export inline styles include the alert CSS
+
 ## Mermaid
 - Custom rehype plugin (`rehypeMermaid`) transforms `<code class="language-mermaid">` to `<div class="mermaid">` in HAST tree before `rehypeHighlight`
 - `mermaid.initialize()` called inside `useEffect`, not during render
 - `mermaid.run({ querySelector: '.preview .mermaid' })` — v11 requires explicit querySelector
 - Raw source saved to `data-source` attribute for theme-switch survival
+- Mermaid reload via per-block `tick` counter + local `useEffect`. On click: `oldEl.replaceWith(newEl)` to bypass mermaid v11's in-memory processed node Set, then `mermaid.run({ nodes: [newEl] })`.
+- `Preview` wrapped in `React.memo` so it doesn't re-render on split pane resize — prevents React from resetting `.mermaid` textContent to source.
 - Mermaid config uses `startOnLoad: false`, `background: 'transparent'` in themeVariables
 
 ## Popovers (FontSettings, AccentPicker)
@@ -54,3 +62,4 @@
 - `forwardRef` to expose `<textarea>` for cursor-aware paste
 - Drag-and-drop: `dragCounter` ref pattern to prevent enter/leave flickering on nested children; reads `.md` files via `FileReader`, clears old content
 - Paste via `navigator.clipboard.readText()`, inserts at `selectionStart/selectionEnd`
+- Content persisted to localStorage (`merl.md.content`) on every change via `useEffect`; empty content falls back to `DEMO_CONTENT` on reload

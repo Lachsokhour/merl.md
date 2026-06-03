@@ -58,6 +58,21 @@ flowchart LR
   D --> B
 \`\`\`
 
+> [!NOTE]
+> Useful information that users should know, even when skimming content.
+
+> [!TIP]
+> Helpful advice for doing things better or more easily.
+
+> [!IMPORTANT]
+> Key information users need to know to achieve their goal.
+
+> [!WARNING]
+> Urgent info that needs immediate user attention to avoid problems.
+
+> [!CAUTION]
+> Advises about risks or negative outcomes of certain actions.
+
 ---
 
 *Start editing to see the live preview in action!*
@@ -80,7 +95,7 @@ function save(key: string, value: unknown) {
 }
 
 export default function App() {
-  const [content, setContent] = useState(DEMO_CONTENT)
+  const [content, setContent] = useState(load('content', '') || DEMO_CONTENT)
   const [theme, setTheme] = useState<'light' | 'dark'>(load('theme', 'light'))
   const [fileName, setFileName] = useState<string | null>(null)
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor')
@@ -98,6 +113,8 @@ export default function App() {
 
   useEffect(() => { document.documentElement.setAttribute('data-theme', theme) }, [])
   useEffect(() => { save('theme', theme) }, [theme])
+
+  useEffect(() => { save('content', content) }, [content])
 
   useEffect(() => {
     const url = buildGoogleFontsUrl(englishFont, khmerFont)
@@ -256,7 +273,11 @@ export default function App() {
   }, [])
 
   const handleDownloadHtml = useCallback(() => {
-    const innerHtml = previewRef.current?.innerHTML || ''
+    const previewEl = previewRef.current
+    if (!previewEl) return
+    const clone = previewEl.cloneNode(true) as HTMLElement
+    clone.querySelectorAll('.block-header, .mermaid-header').forEach(el => el.remove())
+    const innerHtml = clone.innerHTML
     const pageTitle = fileName?.replace(/\.\w+$/, '') || 'document'
     const isDark = theme === 'dark'
     const bg = isDark ? '#0f172a' : '#ffffff'
@@ -323,6 +344,35 @@ export default function App() {
     }
     blockquote p { margin: 0.35em 0; }
     blockquote p:first-child::before { content: '\\201C'; font-size: 1.4em; font-weight: 700; color: ${accent}; margin-right: 4px; opacity: 0.6; }
+    blockquote[data-alert] {
+      padding: 0.85em 1.2em 0.85em 2.8em;
+      border: 1px solid color-mix(in srgb, var(--alert-color) 30%, ${border});
+      border-left: 4px solid var(--alert-color);
+      background: color-mix(in srgb, var(--alert-color) 6%, ${bg});
+    }
+    blockquote[data-alert]::before { display: none; }
+    blockquote[data-alert] .alert-icon {
+      position: absolute;
+      left: 14px;
+      top: 1.1em;
+      width: 18px;
+      height: 18px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    blockquote[data-alert] > p.alert-title { font-weight: 700; font-size: 0.65em; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.5em; color: var(--alert-color); }
+    blockquote[data-alert] > p:last-child { margin-bottom: 0; }
+    blockquote[data-alert="NOTE"] { --alert-color: #3b82f6; }
+    blockquote[data-alert="NOTE"] .alert-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E"); }
+    blockquote[data-alert="TIP"] { --alert-color: #22c55e; }
+    blockquote[data-alert="TIP"] .alert-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322c55e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18h6'/%3E%3Cpath d='M10 22h4'/%3E%3Cpath d='M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14'/%3E%3C/svg%3E"); }
+    blockquote[data-alert="IMPORTANT"] { --alert-color: #8b5cf6; }
+    blockquote[data-alert="IMPORTANT"] .alert-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 8v4'/%3E%3Cpath d='M12 16h.01'/%3E%3C/svg%3E"); }
+    blockquote[data-alert="WARNING"] { --alert-color: #f59e0b; }
+    blockquote[data-alert="WARNING"] .alert-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f59e0b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3Cpath d='M10.29 3.86l-8.1 14c-.6 1.04.15 2.14 1.21 2.14h16.2c1.06 0 1.81-1.1 1.21-2.14l-8.1-14c-.6-1.04-1.82-1.04-2.42 0'/%3E%3C/svg%3E"); }
+    blockquote[data-alert="CAUTION"] { --alert-color: #ef4444; }
+    blockquote[data-alert="CAUTION"] .alert-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M15 9l-6 6'/%3E%3Cpath d='M9 9l6 6'/%3E%3C/svg%3E"); }
     ul, ol { margin: 0.7em 0; padding-left: 1.8em; }
     li { margin: 0.35em 0; line-height: 1.7; }
     li::marker { color: ${accent}; }
@@ -467,6 +517,45 @@ export default function App() {
     .hljs-params { color: #abb2bf; }
     .hljs-comment { color: #5c6370; }
     .hljs-function { color: #61aeee; }
+    .code-block-wrap { position: relative; }
+    .code-block-header {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px 0 58px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .code-lang {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.25);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .code-copy-btn {
+      pointer-events: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+      line-height: 1;
+    }
+    .code-copy-btn:hover {
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.85);
+    }
   </style>
 </head>
 <body>
@@ -547,7 +636,7 @@ ${innerHtml}
               <button className="pane-header-clear" onClick={handlePaste} title="Paste from clipboard">
                 <ClipboardPaste size={15} />
               </button>
-              <button className="pane-header-clear" onClick={handleClear} title="Clear content">
+              <button className="pane-header-clear pane-header-danger" onClick={handleClear} title="Clear content">
                 <Trash2 size={15} />
               </button>
             </div>
@@ -572,7 +661,7 @@ ${innerHtml}
         <div className={`pane ${mobileTab !== 'preview' ? 'mobile-hidden' : ''}`}>
           <div className="pane-header">
             <span>Preview</span>
-            <span style={{ fontWeight: 400, textTransform: 'none' }}>Live</span>
+            <div className="pane-header-right" />
           </div>
           <div ref={previewRef} className="pane-content">
             <Preview content={content} theme={theme} />

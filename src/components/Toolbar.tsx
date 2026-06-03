@@ -2,6 +2,7 @@ import { Upload, Download, Moon, Sun, Minus, Plus, ChevronRight } from 'lucide-r
 import type { FileHandle } from '../types'
 import FontSettings from './FontSettings'
 import AccentPicker from './AccentPicker'
+import AboutOverlay from './AboutOverlay'
 
 interface ToolbarProps {
   theme: 'light' | 'dark'
@@ -79,6 +80,8 @@ export default function Toolbar({
         />
 
         <AccentPicker accentColor={accentColor} onChangeAccentColor={onChangeAccentColor} />
+
+        <AboutOverlay />
 
         <div className="toolbar-group">
           <button

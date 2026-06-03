@@ -60,11 +60,13 @@ Output goes to `dist/`.
 | Toggle theme | Click **Dark** / **Light** |
 | Change accent | Click **Accent** (colored dot button) — pick a preset or custom color |
 | Change fonts | Click **Font** — select English and/or Khmer typeface |
+| About | Click **About** (info icon) — view app description and feature list |
 | Zoom preview | Use the **−** / **+** buttons or pinch on mobile |
 | Clear editor | Click the trash icon in the editor pane header |
 | Paste from clipboard | Click the paste icon in the editor pane header (inserts at cursor) |
 | Drag-and-drop file | Drop a `.md` file anywhere on the editor pane |
 | Resize panes | Drag the divider between editor and preview |
+| Reload Mermaid | Click the reload icon in the preview pane header (fixes raw source display) |
 | Mobile tabs | Tap **Editor** or **Preview** to switch views |
 
 ### Mermaid
