@@ -3,6 +3,7 @@ import { ClipboardPaste, Trash2, FileUp } from 'lucide-react'
 import Toolbar from './components/Toolbar'
 import Editor from './components/Editor'
 import Preview from './components/Preview'
+import Toast from './components/Toast'
 import { buildGoogleFontsUrl } from './fonts'
 import type { FileHandle } from './types'
 
@@ -97,6 +98,12 @@ function save(key: string, value: unknown) {
 }
 
 export default function App() {
+  const is404 = (() => {
+    const path = window.location.pathname.replace(/\/+$/, '') || '/'
+    const base = (document.querySelector('base')?.getAttribute('href') || '/').replace(/\/+$/, '') || '/'
+    return path !== base && path !== '/index.html'
+  })()
+
   const [content, setContent] = useState(load('content', '') || DEMO_CONTENT)
   const [theme, setTheme] = useState<'light' | 'dark'>(load('theme', 'light'))
   const [fileName, setFileName] = useState<string | null>(null)
@@ -106,6 +113,7 @@ export default function App() {
   const [previewFontSize, setPreviewFontSize] = useState(load('previewFontSize', 16))
   const [splitPos, setSplitPos] = useState(load('splitPos', 50))
   const [accentColor, setAccentColor] = useState<string | null>(load<string | null>('accentColor', null))
+  const [toast, setToast] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const previewRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
@@ -211,11 +219,13 @@ export default function App() {
   const handleOpenFile = useCallback((file: FileHandle) => {
     setContent(file.content)
     setFileName(file.name)
+    setToast(`Opened ${file.name}`)
   }, [])
 
   const handleClear = useCallback(() => {
     setContent('')
     setFileName(null)
+    setToast('Content cleared')
   }, [])
 
   const handlePaste = useCallback(async () => {
@@ -236,8 +246,11 @@ export default function App() {
       } else {
         setContent(content + text)
       }
+      setToast('Pasted from clipboard')
     } catch { /* clipboard read denied */ }
   }, [content])
+
+  const hideToast = useCallback(() => { setToast(null) }, [])
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -276,9 +289,9 @@ export default function App() {
     reader.readAsText(mdFile)
   }, [])
 
-  const handleDownloadHtml = useCallback(() => {
+  const generateHtml = useCallback(() => {
     const previewEl = previewRef.current
-    if (!previewEl) return
+    if (!previewEl) return null
     const clone = previewEl.cloneNode(true) as HTMLElement
     clone.querySelectorAll('.block-header, .scroll-to-top, .collapse-icon').forEach(el => el.remove())
     clone.querySelectorAll('.mermaid-wrap').forEach(el => {
@@ -300,7 +313,7 @@ export default function App() {
     const border = isDark ? '#334155' : '#e2e8f0'
     const surface2 = isDark ? '#334155' : '#f1f5f9'
     const accent = accentColor || (isDark ? '#818cf8' : '#6366f1')
-    const html = `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -542,7 +555,11 @@ export default function App() {
 ${innerHtml}
 </body>
 </html>`
+  }, [fileName, englishFont, khmerFont, theme, accentColor])
 
+  const handleDownloadHtml = useCallback(() => {
+    const html = generateHtml()
+    if (!html) return
     const blob = new Blob([html], { type: 'text/html' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -557,13 +574,33 @@ ${innerHtml}
     a.download = ts + '-merl-md.html'
     a.click()
     URL.revokeObjectURL(url)
-  }, [fileName, englishFont, khmerFont, theme, accentColor])
+  }, [generateHtml])
+
+  const handleCopyHtml = useCallback(() => {
+    const html = generateHtml()
+    if (!html) return
+    navigator.clipboard.writeText(html)
+    setToast('HTML copied to clipboard')
+  }, [generateHtml])
 
   const chars = useMemo(() => content.length, [content])
   const words = useMemo(() => {
     const trimmed = content.trim()
     return trimmed ? trimmed.split(/\s+/).length : 0
   }, [content])
+
+  if (is404) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: 16, padding: 32, textAlign: 'center', background: 'var(--bg)', color: 'var(--text)' }}>
+        <div style={{ fontSize: 64, fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>404</div>
+        <div style={{ fontSize: 18, color: 'var(--text2)' }}>Page not found</div>
+        <p style={{ fontSize: 14, color: 'var(--text2)', maxWidth: 360, lineHeight: 1.6 }}>
+          The page you're looking for doesn't exist.
+        </p>
+        <a href="/" style={{ color: 'var(--accent)', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>&larr; Back to merl.md</a>
+      </div>
+    )
+  }
 
   return (
     <div className="app-root">
@@ -572,6 +609,7 @@ ${innerHtml}
         onToggleTheme={toggleTheme}
         onOpenFile={handleOpenFile}
         onDownloadHtml={handleDownloadHtml}
+        onCopyHtml={handleCopyHtml}
         chars={chars}
         words={words}
         fileName={fileName}
@@ -648,6 +686,7 @@ ${innerHtml}
           </div>
         </div>
       </div>
+      {toast && <Toast message={toast} onDone={hideToast} />}
     </div>
   )
 }
