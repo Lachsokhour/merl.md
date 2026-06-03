@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
-import { FileText } from 'lucide-react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
+import { FileText, Copy, Check } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
@@ -20,6 +20,33 @@ function rehypeMermaid() {
       }
     })
   }
+}
+
+function CodeBlock({ children }: { children: React.ReactNode }) {
+  const [copied, setCopied] = useState(false)
+  const preRef = useRef<HTMLPreElement>(null)
+  const child = React.Children.only(children) as React.ReactElement<{ className?: string }>
+  const lang = child.props.className?.replace('language-', '') || ''
+
+  const handleCopy = useCallback(async () => {
+    const text = preRef.current?.textContent || ''
+    await navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }, [])
+
+  return (
+    <div className="code-block-wrap">
+      <pre ref={preRef}>{children}</pre>
+      <div className="code-block-header">
+        <span className="code-lang">{lang}</span>
+        <button className="code-copy-btn" onClick={handleCopy} title="Copy code">
+          {copied ? <Check size={13} /> : <Copy size={13} />}
+          <span>{copied ? 'Copied' : 'Copy'}</span>
+        </button>
+      </div>
+    </div>
+  )
 }
 
 export default function Preview({ content, theme }: PreviewProps) {
@@ -83,6 +110,9 @@ export default function Preview({ content, theme }: PreviewProps) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeMermaid, rehypeHighlight]}
+        components={{
+          pre: ({ children }) => <CodeBlock>{children}</CodeBlock>,
+        }}
       >
         {content}
       </ReactMarkdown>

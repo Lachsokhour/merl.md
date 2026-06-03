@@ -42,6 +42,14 @@
 - Both values clamped to viewport bounds (8px padding)
 - Dismissed on mousedown outside panel or button
 
+## Code blocks (copy button)
+- ReactMarkdown `components.pre` override wraps each `<pre>` in a `CodeBlock` component
+- `CodeBlock` renders an absolute-positioned header overlay (`.code-block-header`) on top of the macOS dots header strip
+- Language extracted from `<code>` child element's `className` (e.g., `language-typescript`)
+- Copy via `navigator.clipboard.writeText()`, brief "Copied" feedback with `Check` icon (1.5s timeout)
+- Header uses `pointer-events: none` on container, `pointer-events: auto` on the button to allow clicks
+- CSS variables are not used inside code blocks (they have a fixed dark background `#0f172a`)
+
 ## Editor
 - `forwardRef` to expose `<textarea>` for cursor-aware paste
 - Drag-and-drop: `dragCounter` ref pattern to prevent enter/leave flickering on nested children; reads `.md` files via `FileReader`, clears old content
