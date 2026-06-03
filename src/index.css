@@ -534,6 +534,32 @@ body {
   100% { background-color: transparent; }
 }
 
+/* ── Collapsible Sections ── */
+.collapsible-heading {
+  cursor: pointer;
+  user-select: none;
+}
+.collapse-icon {
+  display: inline;
+  vertical-align: middle;
+  margin-right: 0.35em;
+  opacity: 0.5;
+  transition: transform 0.2s;
+}
+.collapse-icon.collapsed {
+  transform: rotate(-90deg);
+}
+section[data-collapsed] .collapsible-heading {
+  margin-bottom: 0;
+}
+section[data-collapsed] {
+  border-bottom: 1px dashed var(--border);
+  margin-bottom: 1.8em;
+}
+.section-content[hidden] {
+  display: none;
+}
+
 /* ── Paragraphs ── */
 .preview p {
   margin: 0.85em 0;

@@ -76,11 +76,13 @@ export default function AboutOverlay() {
               {[
                 ['Live Preview', 'Split-pane editor with draggable divider'],
                 ['Full GFM', 'Tables, task lists, strikethrough, and more'],
+                ['Collapsible Sections', 'Click headings to collapse/expand'],
                 ['Syntax Highlight', 'Atom-one-dark theme for 13+ languages'],
                 ['Mermaid Diagrams', 'Flowcharts, sequence, Gantt, and more'],
                 ['Bilingual Fonts', '13 English + 17 Khmer Google Fonts'],
                 ['Dark / Light', 'Smooth theme toggle with transitions'],
                 ['Custom Accents', '12 presets + custom color picker'],
+                ['Table of Contents', 'Auto-linked heading anchors'],
                 ['HTML Export', 'Self-contained, theme-aware output'],
                 ['Responsive', 'Desktop, tablet, and mobile layouts'],
                 ['Persistent', 'All settings saved to localStorage'],

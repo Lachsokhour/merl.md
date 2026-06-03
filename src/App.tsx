@@ -280,7 +280,17 @@ export default function App() {
     const previewEl = previewRef.current
     if (!previewEl) return
     const clone = previewEl.cloneNode(true) as HTMLElement
-    clone.querySelectorAll('.block-header, .mermaid-header, .scroll-to-top').forEach(el => el.remove())
+    clone.querySelectorAll('.block-header, .scroll-to-top, .collapse-icon').forEach(el => el.remove())
+    clone.querySelectorAll('.mermaid-wrap').forEach(el => {
+      if (el.querySelector(':scope > .mermaid-header')) {
+        const parent = el.parentNode
+        if (parent) {
+          while (el.firstChild) parent.insertBefore(el.firstChild, el)
+          el.remove()
+        }
+      }
+    })
+    clone.querySelectorAll('.mermaid-header').forEach(el => el.remove())
     const innerHtml = clone.innerHTML
     const pageTitle = fileName?.replace(/\.\w+$/, '') || 'document'
     const isDark = theme === 'dark'

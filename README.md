@@ -5,9 +5,11 @@ A lightweight, bilingual (English/Khmer) markdown previewer with live rendering,
 ## Features
 
 - **Live preview** — split-pane editor/preview with draggable divider
-- **Full GFM support** — headings, bold, italic, strikethrough, lists, task lists, tables, blockquotes, links, images, inline code, fenced code blocks with syntax highlighting
-- **Mermaid diagrams** — ` ```mermaid ` code blocks render as flowcharts, sequence diagrams, Gantt charts, and more
+- **Full GFM support** — headings, bold, italic, strikethrough, lists, task lists, tables, blockquotes, links, images, inline code, fenced code blocks with syntax highlighting, GFM alerts (`[!NOTE]`, `[!WARNING]`, etc.)
+- **Collapsible sections** — click any heading to collapse/expand its content; heading hierarchy is preserved (collapsing an h2 also hides nested h3 sections)
+- **Mermaid diagrams** — ` ```mermaid ` code blocks render as flowcharts, sequence diagrams, Gantt charts, and more; survive theme switches
 - **Syntax highlighting** — atom-one-dark theme via highlight.js (13+ languages)
+- **Table of Contents** — auto-generated heading anchors via rehype-slug; scroll-to-top button when scrolled past 300px
 - **Dark / light mode** — theme toggle with smooth transitions
 - **Custom accent color** — 12 preset swatches + custom color picker; affects links, checkboxes, inline code, header underlines, blockquote bars, and more
 - **Bilingual fonts** — 13 English fonts + 17 Khmer fonts from Google Fonts, loaded dynamically
@@ -17,7 +19,7 @@ A lightweight, bilingual (English/Khmer) markdown previewer with live rendering,
 - **Drag-and-drop** — drop `.md` files directly onto the editor pane; old content is cleared, file name shown
 - **Enhanced text selection** — selection highlight uses your custom accent color in both light/dark themes
 - **Responsive** — desktop (side-by-side), tablet (icon-only toolbar), mobile (tabbed editor/preview)
-- **All settings persisted** — fonts, accent color, theme, split position, font size via localStorage
+- **All settings persisted** — fonts, accent color, theme, split position, font size, editor content via localStorage
 
 ## Tech Stack
 
@@ -66,8 +68,14 @@ Output goes to `dist/`.
 | Paste from clipboard | Click the paste icon in the editor pane header (inserts at cursor) |
 | Drag-and-drop file | Drop a `.md` file anywhere on the editor pane |
 | Resize panes | Drag the divider between editor and preview |
-| Reload Mermaid | Click the reload icon in the preview pane header (fixes raw source display) |
+| Collapse sections | Click any heading in preview to collapse/expand |
+| Reload Mermaid | Click the reload icon on a diagram to re-render |
+| Scroll to top | Click the arrow button at bottom-right when scrolled |
 | Mobile tabs | Tap **Editor** or **Preview** to switch views |
+
+### Collapsible Sections
+
+Click any heading (h1–h6) in the preview pane to collapse or expand its section content. The heading hierarchy is preserved — collapsing an `h2` hides all nested `h3` sections too. A `▼` icon appears next to each heading to indicate the toggle state.
 
 ### Mermaid
 
@@ -98,13 +106,15 @@ src/
 ├── index.css            # All styles (themes, layout, components, responsive)
 ├── fonts.ts             # Font listings & Google Fonts URL builder
 ├── types.ts             # TypeScript interfaces
+├── version.ts           # APP_VERSION constant (synced with package.json)
 ├── main.tsx             # React entry point
 └── components/
     ├── Editor.tsx       # Markdown textarea (forwardRef for cursor-aware paste)
-    ├── Preview.tsx      # ReactMarkdown + custom rehypeMermaid plugin
+    ├── Preview.tsx      # ReactMarkdown + rehype plugins (mermaid, alerts, sections, slug)
     ├── Toolbar.tsx      # Top toolbar with all controls
     ├── FontSettings.tsx # Font selector popover (portal-based)
-    └── AccentPicker.tsx # Accent color picker popover (portal-based)
+    ├── AccentPicker.tsx # Accent color picker popover (portal-based)
+    └── AboutOverlay.tsx # App info overlay (portal-based)
 ```
 
 ## Responsive Breakpoints

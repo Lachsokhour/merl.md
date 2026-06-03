@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { FileText, Copy, Check, RotateCw, ArrowUp } from 'lucide-react'
+import { FileText, Copy, Check, RotateCw, ArrowUp, ChevronDown } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
@@ -43,6 +43,32 @@ function rehypeAlert() {
         }
       }
     })
+  }
+}
+
+function rehypeSectionize() {
+  return (tree: any) => {
+    const stack: any[] = [{ level: 0, children: [] }]
+    for (const child of (tree.children || [])) {
+      const tag = child.tagName
+      const match = tag && tag.match(/^h([1-6])$/)
+      if (match) {
+        const level = parseInt(match[1])
+        while (stack.length > 1 && stack[stack.length - 1].level >= level) {
+          const section = stack.pop()!
+          stack[stack.length - 1].children.push(section.element)
+        }
+        const sectionChildren = [child]
+        stack.push({ level, element: { type: 'element', tagName: 'section', properties: {}, children: sectionChildren }, children: sectionChildren })
+      } else {
+        stack[stack.length - 1].children.push(child)
+      }
+    }
+    while (stack.length > 1) {
+      const section = stack.pop()!
+      stack[stack.length - 1].children.push(section.element)
+    }
+    tree.children = stack[0].children
   }
 }
 
@@ -108,9 +134,16 @@ function MermaidBlock({ children, theme }: { children: React.ReactNode; theme: '
     let el = wrap.querySelector<HTMLElement>('.mermaid')
     if (!el) return
 
+    let src = el.getAttribute('data-source')
+
+    if (!src) {
+      const text = el.textContent || ''
+      if (!text.trim()) return
+      el.setAttribute('data-source', text)
+      src = text
+    }
+
     if (tick > 0) {
-      const src = el.getAttribute('data-source')
-      if (!src) return
       const newEl = document.createElement('div')
       newEl.className = 'mermaid'
       newEl.textContent = src
@@ -118,7 +151,7 @@ function MermaidBlock({ children, theme }: { children: React.ReactNode; theme: '
       el.replaceWith(newEl)
       el = newEl
     } else {
-      el.setAttribute('data-source', el.textContent || '')
+      el.textContent = src
     }
 
     el.removeAttribute('data-processed')
@@ -137,23 +170,57 @@ function MermaidBlock({ children, theme }: { children: React.ReactNode; theme: '
       {children}
     </div>
   )
-  }
+}
+
+function CollapsibleSection({ children }: { children: React.ReactNode }) {
+  const [collapsed, setCollapsed] = useState(false)
+  const childrenArr = React.Children.toArray(children)
+  const headingIdx = childrenArr.findIndex(
+    child => React.isValidElement(child) && typeof child.type === 'string' && /^h[1-6]$/.test(child.type)
+  )
+  if (headingIdx === -1) return <section>{children}</section>
+  const heading = childrenArr[headingIdx] as React.ReactElement<{ children?: React.ReactNode }>
+  const content = childrenArr.slice(headingIdx + 1)
+  const toggle = useCallback(() => setCollapsed(c => !c), [])
+  return (
+    <section data-collapsed={collapsed || undefined}>
+      {React.cloneElement(heading, { onClick: toggle, className: `collapsible-heading${collapsed ? ' collapsed' : ''}` } as any,
+        <ChevronDown key="collapse-icon" size={16} className={`collapse-icon${collapsed ? ' collapsed' : ''}`} />,
+        ...React.Children.toArray(heading.props.children),
+      )}
+      <div className="section-content" hidden={collapsed}>
+        {content}
+      </div>
+    </section>
+  )
+}
+
+function ScrollToTop({ previewRef }: { previewRef: React.RefObject<HTMLDivElement | null> }) {
+  const [show, setShow] = useState(false)
+
+  useEffect(() => {
+    const el = previewRef.current
+    if (!el) return
+    const onScroll = () => setShow(el.scrollTop > 300)
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [previewRef])
+
+  const handleClick = useCallback(() => {
+    previewRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [previewRef])
+
+  if (!show) return null
+  return createPortal(
+    <button className="scroll-to-top" onClick={handleClick} title="Scroll to top">
+      <ArrowUp size={18} />
+    </button>,
+    document.body
+  )
+}
 
 export default React.memo(function Preview({ content, theme }: PreviewProps) {
   const previewRef = useRef<HTMLDivElement>(null)
-  const [showScrollTop, setShowScrollTop] = useState(false)
-
-  useEffect(() => {
-    function onScroll() { setShowScrollTop((previewRef.current?.scrollTop ?? 0) > 300) }
-    const el = previewRef.current
-    if (!el) return
-    el.addEventListener('scroll', onScroll, { passive: true })
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [])
-
-  const scrollToTop = useCallback(() => {
-    previewRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [])
 
   useEffect(() => {
     mermaid.initialize({
@@ -208,8 +275,9 @@ export default React.memo(function Preview({ content, theme }: PreviewProps) {
     <div className="preview" ref={previewRef}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeAlert, rehypeMermaid, rehypeSlug, rehypeHighlight]}
+        rehypePlugins={[rehypeAlert, rehypeMermaid, rehypeSectionize, rehypeSlug, rehypeHighlight]}
         components={{
+          section: ({ children }) => <CollapsibleSection>{children}</CollapsibleSection>,
           blockquote: ({ node, children }) => {
             const alertType = (node as any)?.properties?.alertType
             if (alertType) {
@@ -241,12 +309,7 @@ export default React.memo(function Preview({ content, theme }: PreviewProps) {
       >
         {content}
       </ReactMarkdown>
-      {showScrollTop && createPortal(
-        <button className="scroll-to-top" onClick={scrollToTop} title="Scroll to top">
-          <ArrowUp size={18} />
-        </button>,
-        document.body
-      )}
+      <ScrollToTop previewRef={previewRef} />
     </div>
   )
 })
