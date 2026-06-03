@@ -102,7 +102,7 @@ export default function App() {
   const [fileName, setFileName] = useState<string | null>(null)
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor')
   const [englishFont, setEnglishFont] = useState(load('englishFont', 'Inter'))
-  const [khmerFont, setKhmerFont] = useState(load('khmerFont', 'Noto Sans Khmer'))
+  const [khmerFont, setKhmerFont] = useState(load('khmerFont', 'Google Sans'))
   const [previewFontSize, setPreviewFontSize] = useState(load('previewFontSize', 16))
   const [splitPos, setSplitPos] = useState(load('splitPos', 50))
   const [accentColor, setAccentColor] = useState<string | null>(load<string | null>('accentColor', null))

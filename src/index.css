@@ -391,7 +391,7 @@ body {
   border: none;
   outline: none;
   resize: none;
-  font-family: var(--mono);
+  font-family: 'Google Sans', sans-serif;
   font-size: 14px;
   line-height: 1.7;
   color: var(--text);

@@ -1,5 +1,7 @@
 # មើល .md ◇ merl.md
 
+[![GitHub stars](https://img.shields.io/github/stars/Lachsokhour/merl.md?style=social)](https://github.com/Lachsokhour/merl.md)
+
 A lightweight, bilingual (English/Khmer) markdown previewer with live rendering, syntax highlighting, Mermaid diagrams, dark mode, custom accent colors, and responsive layout.
 
 ## Features

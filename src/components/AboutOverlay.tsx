@@ -100,6 +100,11 @@ export default function AboutOverlay() {
             <div style={{ marginTop: 4, paddingTop: 10, borderTop: '1px solid var(--border)', fontSize: 11, color: 'var(--text2)', textAlign: 'center' }}>
               MIT &middot; v{APP_VERSION} &middot; Built with React 19 + TypeScript + Vite
             </div>
+            <div style={{ marginTop: 6, fontSize: 11, textAlign: 'center' }}>
+              <a href="https://github.com/Lachsokhour/merl.md" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>
+                &#9733; Star on GitHub
+              </a>
+            </div>
           </div>
         </div>,
         document.body
