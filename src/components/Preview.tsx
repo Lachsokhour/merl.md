@@ -57,6 +57,7 @@ function rehypeMermaid() {
 function CodeBlock({ children }: { children: React.ReactNode }) {
   const [copied, setCopied] = useState(false)
   const preRef = useRef<HTMLPreElement>(null)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const child = React.Children.only(children) as React.ReactElement<{ className?: string }>
   const lang = child.props.className?.replace('language-', '') || ''
 
@@ -64,8 +65,11 @@ function CodeBlock({ children }: { children: React.ReactNode }) {
     const text = preRef.current?.textContent || ''
     await navigator.clipboard.writeText(text)
     setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
+    clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => setCopied(false), 1500)
   }, [])
+
+  useEffect(() => () => clearTimeout(timerRef.current), [])
 
   return (
     <div className="code-block-wrap">
@@ -167,7 +171,7 @@ export default React.memo(function Preview({ content, theme }: PreviewProps) {
         }
         el.removeAttribute('data-processed')
       })
-      mermaid.run({ querySelector: '.preview .mermaid' }).catch(() => {})
+      mermaid.run({ querySelector: '.preview .mermaid' }).catch(err => console.warn('Mermaid render error:', err))
     })
     return () => cancelAnimationFrame(timer)
   }, [content, theme])
@@ -201,7 +205,7 @@ export default React.memo(function Preview({ content, theme }: PreviewProps) {
             }
             return <blockquote>{children}</blockquote>
           },
-          div: ({ className, children, node, ...rest }) => {
+          div: ({ className, children, ...rest }) => {
             if (className === 'mermaid-wrap') {
               return <MermaidBlock>{children}</MermaidBlock>
             }

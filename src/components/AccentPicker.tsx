@@ -8,6 +8,7 @@ const PAD = 8
 interface AccentPickerProps {
   accentColor: string | null
   onChangeAccentColor: (color: string | null) => void
+  theme: 'light' | 'dark'
 }
 
 const PRESETS = [
@@ -16,11 +17,15 @@ const PRESETS = [
   '#ef4444', '#f43f5e', '#ec4899', '#8b5cf6',
 ]
 
-export default function AccentPicker({ accentColor, onChangeAccentColor }: AccentPickerProps) {
+const DEFAULT_ACCENT = '#6366f1'
+const DARK_DEFAULT = '#818cf8'
+
+export default function AccentPicker({ accentColor, onChangeAccentColor, theme }: AccentPickerProps) {
   const [open, setOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
   const btnRef = useRef<HTMLButtonElement>(null)
   const [pos, setPos] = useState({ top: 0, left: 0 })
+  const defaultAccent = theme === 'dark' ? DARK_DEFAULT : DEFAULT_ACCENT
 
   const updatePos = useCallback(() => {
     const btn = btnRef.current
@@ -94,7 +99,7 @@ export default function AccentPicker({ accentColor, onChangeAccentColor }: Accen
                   width: 24,
                   height: 24,
                   borderRadius: '50%',
-                  border: c === (accentColor || '#6366f1') ? '2px solid var(--text)' : '1px solid var(--border)',
+                  border: c === (accentColor || defaultAccent) ? '2px solid var(--text)' : '1px solid var(--border)',
                   background: c,
                   cursor: 'pointer',
                   display: 'flex',
@@ -103,7 +108,7 @@ export default function AccentPicker({ accentColor, onChangeAccentColor }: Accen
                   padding: 0,
                 }}
               >
-                {c === (accentColor || '#6366f1') && (
+                {c === (accentColor || defaultAccent) && (
                   <Check size={12} color={parseInt(c.slice(1), 16) > 0x888888 ? '#fff' : '#000'} />
                 )}
               </button>
@@ -114,7 +119,7 @@ export default function AccentPicker({ accentColor, onChangeAccentColor }: Accen
             Custom
             <input
               type="color"
-              value={accentColor || '#6366f1'}
+              value={accentColor || defaultAccent}
               onChange={e => onChangeAccentColor(e.target.value)}
               style={{
                 width: '100%',

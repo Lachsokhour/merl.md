@@ -42,7 +42,7 @@ export const KHMER_FONTS: FontOption[] = [
 export function buildGoogleFontsUrl(english: string, khmer: string): string {
   const enc = (s: string) => s.replace(/ /g, '+')
   const fmt = (name: string, weights?: string) => {
-    const w = weights ? `:wght@${weights.replace(/;/g, ';')}` : ''
+    const w = weights ? `:wght@${weights}` : ''
     return `family=${enc(name)}${w}`
   }
   const enW = ENGLISH_FONTS.find(f => f.name === english)?.weights || '400;600;700'

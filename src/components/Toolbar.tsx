@@ -80,7 +80,7 @@ export default function Toolbar({
           onChangeKhmer={onChangeKhmerFont}
         />
 
-        <AccentPicker accentColor={accentColor} onChangeAccentColor={onChangeAccentColor} />
+        <AccentPicker accentColor={accentColor} onChangeAccentColor={onChangeAccentColor} theme={theme} />
 
         <AboutOverlay />
 

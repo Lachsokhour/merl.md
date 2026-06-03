@@ -91,7 +91,9 @@ function load<T>(key: string, fallback: T): T {
 }
 
 function save(key: string, value: unknown) {
-  localStorage.setItem(LS(key), JSON.stringify(value))
+  try {
+    localStorage.setItem(LS(key), JSON.stringify(value))
+  } catch { /* localStorage full or unavailable */ }
 }
 
 export default function App() {
@@ -111,7 +113,7 @@ export default function App() {
   const [isDragOver, setIsDragOver] = useState(false)
   const dragCounter = useRef(0)
 
-  useEffect(() => { document.documentElement.setAttribute('data-theme', theme) }, [])
+  useEffect(() => { document.documentElement.setAttribute('data-theme', theme) }, [theme])
   useEffect(() => { save('theme', theme) }, [theme])
 
   useEffect(() => { save('content', content) }, [content])
@@ -217,22 +219,24 @@ export default function App() {
   }, [])
 
   const handlePaste = useCallback(async () => {
-    const text = await navigator.clipboard.readText()
-    if (!text) return
-    const el = editorRef.current
-    if (el) {
-      const start = el.selectionStart
-      const end = el.selectionEnd
-      const before = content.slice(0, start)
-      const after = content.slice(end)
-      setContent(before + text + after)
-      requestAnimationFrame(() => {
-        el.focus()
-        el.selectionStart = el.selectionEnd = start + text.length
-      })
-    } else {
-      setContent(content + text)
-    }
+    try {
+      const text = await navigator.clipboard.readText()
+      if (!text) return
+      const el = editorRef.current
+      if (el) {
+        const start = el.selectionStart
+        const end = el.selectionEnd
+        const before = content.slice(0, start)
+        const after = content.slice(end)
+        setContent(before + text + after)
+        requestAnimationFrame(() => {
+          el.focus()
+          el.selectionStart = el.selectionEnd = start + text.length
+        })
+      } else {
+        setContent(content + text)
+      }
+    } catch { /* clipboard read denied */ }
   }, [content])
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
@@ -245,7 +249,7 @@ export default function App() {
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault()
-    dragCounter.current -= 1
+    dragCounter.current = Math.max(0, dragCounter.current - 1)
     if (dragCounter.current === 0) {
       setIsDragOver(false)
     }
@@ -519,44 +523,6 @@ export default function App() {
     .hljs-comment { color: #5c6370; }
     .hljs-function { color: #61aeee; }
     .code-block-wrap { position: relative; }
-    .code-block-header {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 12px 0 58px;
-      pointer-events: none;
-      z-index: 2;
-    }
-    .code-lang {
-      font-size: 11px;
-      font-weight: 500;
-      color: rgba(255,255,255,0.25);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .code-copy-btn {
-      pointer-events: auto;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 6px;
-      background: rgba(255,255,255,0.06);
-      color: rgba(255,255,255,0.5);
-      font-size: 11px;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all 0.15s;
-      line-height: 1;
-    }
-    .code-copy-btn:hover {
-      background: rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.85);
-    }
   </style>
 </head>
 <body>
