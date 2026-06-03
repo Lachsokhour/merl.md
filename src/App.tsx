@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
+import { ClipboardPaste } from 'lucide-react'
 import { Trash2 } from 'lucide-react'
 import Toolbar from './components/Toolbar'
 import Editor from './components/Editor'
@@ -91,6 +92,7 @@ export default function App() {
   const [accentColor, setAccentColor] = useState<string | null>(load<string | null>('accentColor', null))
   const containerRef = useRef<HTMLDivElement>(null)
   const previewRef = useRef<HTMLDivElement>(null)
+  const editorRef = useRef<HTMLTextAreaElement>(null)
   const dragging = useRef(false)
 
   useEffect(() => { document.documentElement.setAttribute('data-theme', theme) }, [])
@@ -195,6 +197,25 @@ export default function App() {
     setContent('')
     setFileName(null)
   }, [])
+
+  const handlePaste = useCallback(async () => {
+    const text = await navigator.clipboard.readText()
+    if (!text) return
+    const el = editorRef.current
+    if (el) {
+      const start = el.selectionStart
+      const end = el.selectionEnd
+      const before = content.slice(0, start)
+      const after = content.slice(end)
+      setContent(before + text + after)
+      requestAnimationFrame(() => {
+        el.focus()
+        el.selectionStart = el.selectionEnd = start + text.length
+      })
+    } else {
+      setContent(content + text)
+    }
+  }, [content])
 
   const handleDownloadHtml = useCallback(() => {
     const innerHtml = previewRef.current?.innerHTML || ''
@@ -481,12 +502,15 @@ ${innerHtml}
             <span>Editor</span>
             <div className="pane-header-right">
               {fileName && <span className="pane-header-file">{fileName}</span>}
+              <button className="pane-header-clear" onClick={handlePaste} title="Paste from clipboard">
+                <ClipboardPaste size={15} />
+              </button>
               <button className="pane-header-clear" onClick={handleClear} title="Clear content">
-                <Trash2 size={12} />
+                <Trash2 size={15} />
               </button>
             </div>
           </div>
-          <Editor value={content} onChange={setContent} />
+          <Editor ref={editorRef} value={content} onChange={setContent} />
         </div>
 
         <div
