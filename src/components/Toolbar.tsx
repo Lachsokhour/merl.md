@@ -60,57 +60,59 @@ export default function Toolbar({
         {fileName && <small>{fileName}</small>}
       </div>
 
-      <button className="toolbar-btn" onClick={handleOpen} title="Open .md file">
-        <Upload size={15} />
-        <span className="toolbar-btn-label">Open</span>
-      </button>
-
-      <button className="toolbar-btn" onClick={onDownloadHtml} title="Download as HTML">
-        <Download size={15} />
-        <span className="toolbar-btn-label">HTML</span>
-      </button>
-
-      <FontSettings
-        englishFont={englishFont}
-        khmerFont={khmerFont}
-        onChangeEnglish={onChangeEnglishFont}
-        onChangeKhmer={onChangeKhmerFont}
-      />
-
-      <AccentPicker accentColor={accentColor} onChangeAccentColor={onChangeAccentColor} />
-
-      <div className="toolbar-group">
-        <button
-          className="toolbar-btn toolbar-btn-icon"
-          onClick={() => onChangePreviewFontSize(Math.max(12, previewFontSize - 1))}
-          disabled={previewFontSize <= 12}
-          title="Decrease font size"
-        >
-          <Minus size={14} />
+      <div className="toolbar-scroll">
+        <button className="toolbar-btn" onClick={handleOpen} title="Open .md file">
+          <Upload size={15} />
+          <span className="toolbar-btn-label">Open</span>
         </button>
-        <span className="toolbar-size-label">{previewFontSize}px</span>
-        <button
-          className="toolbar-btn toolbar-btn-icon"
-          onClick={() => onChangePreviewFontSize(Math.min(24, previewFontSize + 1))}
-          disabled={previewFontSize >= 24}
-          title="Increase font size"
-        >
-          <Plus size={14} />
+
+        <button className="toolbar-btn" onClick={onDownloadHtml} title="Download as HTML">
+          <Download size={15} />
+          <span className="toolbar-btn-label">HTML</span>
         </button>
+
+        <FontSettings
+          englishFont={englishFont}
+          khmerFont={khmerFont}
+          onChangeEnglish={onChangeEnglishFont}
+          onChangeKhmer={onChangeKhmerFont}
+        />
+
+        <AccentPicker accentColor={accentColor} onChangeAccentColor={onChangeAccentColor} />
+
+        <div className="toolbar-group">
+          <button
+            className="toolbar-btn toolbar-btn-icon"
+            onClick={() => onChangePreviewFontSize(Math.max(12, previewFontSize - 1))}
+            disabled={previewFontSize <= 12}
+            title="Decrease font size"
+          >
+            <Minus size={14} />
+          </button>
+          <span className="toolbar-size-label">{previewFontSize}px</span>
+          <button
+            className="toolbar-btn toolbar-btn-icon"
+            onClick={() => onChangePreviewFontSize(Math.min(24, previewFontSize + 1))}
+            disabled={previewFontSize >= 24}
+            title="Increase font size"
+          >
+            <Plus size={14} />
+          </button>
+        </div>
+
+        <button
+          className="toolbar-btn"
+          onClick={onToggleTheme}
+          title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+        >
+          {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
+          <span className="toolbar-btn-label">{theme === 'light' ? 'Dark' : 'Light'}</span>
+        </button>
+
+        <span className="toolbar-stats">
+          {words} words · {chars} chars
+        </span>
       </div>
-
-      <button
-        className="toolbar-btn"
-        onClick={onToggleTheme}
-        title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-      >
-        {theme === 'light' ? <Moon size={15} /> : <Sun size={15} />}
-        <span className="toolbar-btn-label">{theme === 'light' ? 'Dark' : 'Light'}</span>
-      </button>
-
-      <span className="toolbar-stats">
-        {words} words · {chars} chars
-      </span>
     </header>
   )
 }

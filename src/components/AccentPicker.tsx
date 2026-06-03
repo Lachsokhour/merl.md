@@ -1,5 +1,9 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { Check } from 'lucide-react'
+
+const PANEL_WIDTH = 190
+const PAD = 8
 
 interface AccentPickerProps {
   accentColor: string | null
@@ -16,9 +20,29 @@ export default function AccentPicker({ accentColor, onChangeAccentColor }: Accen
   const [open, setOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
   const btnRef = useRef<HTMLButtonElement>(null)
+  const [pos, setPos] = useState({ top: 0, left: 0 })
+
+  const updatePos = useCallback(() => {
+    const btn = btnRef.current
+    if (!btn) return
+    const r = btn.getBoundingClientRect()
+    const cw = document.documentElement.clientWidth
+    const pw = PANEL_WIDTH
+    const center = r.left + r.width / 2
+    let left: number
+    if (center > cw / 2) {
+      left = r.right - pw
+    } else {
+      left = r.left
+    }
+    left = Math.max(PAD, Math.min(left, cw - pw - PAD))
+    setPos({ top: r.bottom + 6, left })
+  }, [])
 
   useEffect(() => {
     if (!open) return
+    updatePos()
+
     function onDown(e: MouseEvent) {
       if (panelRef.current?.contains(e.target as Node)) return
       if (btnRef.current?.contains(e.target as Node)) return
@@ -26,7 +50,7 @@ export default function AccentPicker({ accentColor, onChangeAccentColor }: Accen
     }
     document.addEventListener('mousedown', onDown)
     return () => document.removeEventListener('mousedown', onDown)
-  }, [open])
+  }, [open, updatePos])
 
   return (
     <div style={{ position: 'relative' }}>
@@ -50,8 +74,12 @@ export default function AccentPicker({ accentColor, onChangeAccentColor }: Accen
         <span className="toolbar-btn-label">Accent</span>
       </button>
 
-      {open && (
-        <div ref={panelRef} className="font-panel" style={{ minWidth: 190, right: 0 }}>
+      {open && createPortal(
+        <div
+          ref={panelRef}
+          className="font-panel"
+          style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 1000, minWidth: PANEL_WIDTH }}
+        >
           <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.4px', color: 'var(--text2)', marginBottom: 8 }}>
             Accent Color
           </div>
@@ -109,7 +137,8 @@ export default function AccentPicker({ accentColor, onChangeAccentColor }: Accen
               Reset to default
             </button>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )

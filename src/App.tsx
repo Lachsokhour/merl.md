@@ -438,7 +438,7 @@ ${innerHtml}
   }, [content])
 
   return (
-    <div>
+    <div className="app-root">
       <Toolbar
         theme={theme}
         onToggleTheme={toggleTheme}

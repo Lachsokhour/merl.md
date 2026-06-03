@@ -31,7 +31,17 @@
   padding: 0;
 }
 
-html, body, #root {
+html, body {
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+}
+
+.app-root {
+  display: flex;
+  flex-direction: column;
   height: 100%;
 }
 
@@ -177,12 +187,17 @@ body {
   white-space: nowrap;
 }
 
+.toolbar-scroll {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: inherit;
+  flex: 1;
+  min-width: 0;
+}
+
 /* ── Font Settings Panel ── */
 .font-panel {
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  z-index: 100;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -224,8 +239,9 @@ body {
 
 /* ── Layout ── */
 .app-container {
+  flex: 1;
+  min-height: 0;
   display: flex;
-  height: calc(100vh - 57px);
   overflow: hidden;
 }
 
@@ -804,11 +820,16 @@ body {
   .toolbar {
     gap: 4px;
     padding: 8px 10px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
   }
 
-  .toolbar::-webkit-scrollbar {
+  .toolbar-scroll {
+    overflow-x: auto;
+    justify-content: end;
+    -webkit-overflow-scrolling: touch;
+    gap: 4px;
+  }
+
+  .toolbar-scroll::-webkit-scrollbar {
     display: none;
   }
 
@@ -844,7 +865,11 @@ body {
 
   .app-container {
     flex-direction: column;
-    height: calc(100vh - 49px);
+  }
+
+  .pane {
+    flex: 1 1 0% !important;
+    width: 100% !important;
   }
 
   .pane-divider {
@@ -888,14 +913,6 @@ body {
   .editor-textarea {
     padding: 14px;
     font-size: 13px;
-  }
-
-  /* Popover positioning: keep within viewport */
-  .font-panel {
-    right: auto;
-    left: 0;
-    min-width: unset;
-    width: max(200px, 50vw);
   }
 
   .preview h1 { font-size: 1.7em; }
