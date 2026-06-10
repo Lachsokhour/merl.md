@@ -11,6 +11,7 @@ interface FontSettingsProps {
   khmerFont: string
   onChangeEnglish: (font: string) => void
   onChangeKhmer: (font: string) => void
+  compact?: boolean
 }
 
 export default function FontSettings({
@@ -18,6 +19,7 @@ export default function FontSettings({
   khmerFont,
   onChangeEnglish,
   onChangeKhmer,
+  compact,
 }: FontSettingsProps) {
   const [open, setOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -29,7 +31,9 @@ export default function FontSettings({
     if (!btn) return
     const r = btn.getBoundingClientRect()
     const cw = document.documentElement.clientWidth
+    const ch = document.documentElement.clientHeight
     const pw = PANEL_WIDTH
+    const ph = 200
     const center = r.left + r.width / 2
     let left: number
     if (center > cw / 2) {
@@ -38,7 +42,10 @@ export default function FontSettings({
       left = r.left
     }
     left = Math.max(PAD, Math.min(left, cw - pw - PAD))
-    setPos({ top: r.bottom + 6, left })
+    const below = r.bottom + 6
+    const above = r.top - ph - 6
+    const top = below + ph > ch && above > 0 ? above : below
+    setPos({ top, left })
   }, [])
 
   useEffect(() => {
@@ -61,12 +68,12 @@ export default function FontSettings({
     <div style={{ position: 'relative' }}>
       <button
         ref={btnRef}
-        className="toolbar-btn"
+        className={compact ? 'review-sidebar-btn' : 'toolbar-btn'}
         onClick={() => setOpen(o => !o)}
         title="Font settings"
       >
-        <Type size={15} />
-        <span className="toolbar-btn-label">Font</span>
+        <Type size={compact ? 18 : 15} />
+        {!compact && <span className="toolbar-btn-label">Font</span>}
       </button>
 
       {open && createPortal(

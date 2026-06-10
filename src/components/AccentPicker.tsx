@@ -9,6 +9,7 @@ interface AccentPickerProps {
   accentColor: string | null
   onChangeAccentColor: (color: string | null) => void
   theme: 'light' | 'dark'
+  compact?: boolean
 }
 
 const PRESETS = [
@@ -20,7 +21,7 @@ const PRESETS = [
 const DEFAULT_ACCENT = '#6366f1'
 const DARK_DEFAULT = '#818cf8'
 
-export default function AccentPicker({ accentColor, onChangeAccentColor, theme }: AccentPickerProps) {
+export default function AccentPicker({ accentColor, onChangeAccentColor, theme, compact }: AccentPickerProps) {
   const [open, setOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
   const btnRef = useRef<HTMLButtonElement>(null)
@@ -32,7 +33,9 @@ export default function AccentPicker({ accentColor, onChangeAccentColor, theme }
     if (!btn) return
     const r = btn.getBoundingClientRect()
     const cw = document.documentElement.clientWidth
+    const ch = document.documentElement.clientHeight
     const pw = PANEL_WIDTH
+    const ph = 248
     const center = r.left + r.width / 2
     let left: number
     if (center > cw / 2) {
@@ -41,7 +44,10 @@ export default function AccentPicker({ accentColor, onChangeAccentColor, theme }
       left = r.left
     }
     left = Math.max(PAD, Math.min(left, cw - pw - PAD))
-    setPos({ top: r.bottom + 6, left })
+    const below = r.bottom + 6
+    const above = r.top - ph - 6
+    const top = below + ph > ch && above > 0 ? above : below
+    setPos({ top, left })
   }, [])
 
   useEffect(() => {
@@ -61,22 +67,22 @@ export default function AccentPicker({ accentColor, onChangeAccentColor, theme }
     <div style={{ position: 'relative' }}>
       <button
         ref={btnRef}
-        className="toolbar-btn"
+        className={compact ? 'review-sidebar-btn' : 'toolbar-btn'}
         onClick={() => setOpen(!open)}
         title="Accent color"
       >
         <span
           style={{
             display: 'inline-block',
-            width: 12,
-            height: 12,
+            width: compact ? 16 : 12,
+            height: compact ? 16 : 12,
             borderRadius: '50%',
             background: accentColor || 'var(--accent)',
-            border: '1px solid var(--border)',
+            border: compact ? '2px solid var(--border)' : '1px solid var(--border)',
             flexShrink: 0,
           }}
         />
-        <span className="toolbar-btn-label">Accent</span>
+        {!compact && <span className="toolbar-btn-label">Accent</span>}
       </button>
 
       {open && createPortal(

@@ -3,6 +3,7 @@ import { ClipboardPaste, Trash2, FileUp } from 'lucide-react'
 import Toolbar from './components/Toolbar'
 import Editor from './components/Editor'
 import Preview from './components/Preview'
+import ReviewMode from './components/ReviewMode'
 import Toast from './components/Toast'
 import { buildGoogleFontsUrl } from './fonts'
 import type { FileHandle } from './types'
@@ -113,6 +114,7 @@ export default function App() {
   const [previewFontSize, setPreviewFontSize] = useState(load('previewFontSize', 16))
   const [splitPos, setSplitPos] = useState(load('splitPos', 50))
   const [accentColor, setAccentColor] = useState<string | null>(load<string | null>('accentColor', null))
+  const [reviewMode, setReviewMode] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const previewRef = useRef<HTMLDivElement>(null)
@@ -214,6 +216,10 @@ export default function App() {
       document.documentElement.setAttribute('data-theme', next)
       return next
     })
+  }, [])
+
+  const toggleReviewMode = useCallback(() => {
+    setReviewMode(prev => !prev)
   }, [])
 
   const handleOpenFile = useCallback((file: FileHandle) => {
@@ -604,12 +610,30 @@ ${innerHtml}
 
   return (
     <div className="app-root">
+      {reviewMode ? (
+        <ReviewMode
+          content={content}
+          theme={theme}
+          onExit={toggleReviewMode}
+          onToggleTheme={toggleTheme}
+          previewFontSize={previewFontSize}
+          onChangePreviewFontSize={setPreviewFontSize}
+          englishFont={englishFont}
+          khmerFont={khmerFont}
+          onChangeEnglishFont={setEnglishFont}
+          onChangeKhmerFont={setKhmerFont}
+          accentColor={accentColor}
+          onChangeAccentColor={setAccentColor}
+        />
+      ) : (
+        <>
       <Toolbar
         theme={theme}
         onToggleTheme={toggleTheme}
         onOpenFile={handleOpenFile}
         onDownloadHtml={handleDownloadHtml}
         onCopyHtml={handleCopyHtml}
+        onToggleReview={toggleReviewMode}
         chars={chars}
         words={words}
         fileName={fileName}
@@ -686,6 +710,8 @@ ${innerHtml}
           </div>
         </div>
       </div>
+        </>
+      )}
       {toast && <Toast message={toast} onDone={hideToast} />}
     </div>
   )
