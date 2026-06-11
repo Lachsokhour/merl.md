@@ -3,6 +3,7 @@ import { ClipboardPaste, Trash2, FileUp } from 'lucide-react'
 import Toolbar from './components/Toolbar'
 import Editor from './components/Editor'
 import Preview from './components/Preview'
+import ErrorBoundary from './components/ErrorBoundary'
 import ReviewMode from './components/ReviewMode'
 import Toast from './components/Toast'
 import { buildGoogleFontsUrl } from './fonts'
@@ -724,7 +725,9 @@ ${innerHtml}
             <div className="pane-header-right" />
           </div>
           <div ref={previewRef} className="pane-content">
-            <Preview content={content} theme={theme} />
+            <ErrorBoundary>
+              <Preview content={content} theme={theme} />
+            </ErrorBoundary>
           </div>
         </div>
       </div>

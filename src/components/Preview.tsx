@@ -5,8 +5,10 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeSlug from 'rehype-slug'
-import { visit } from 'unist-util-visit'
 import mermaid from 'mermaid'
+import rehypeAlert from '../rehype/alert'
+import rehypeSectionize from '../rehype/sectionize'
+import rehypeMermaid from '../rehype/mermaid'
 
 const MERMAID_DEFAULT_CONFIG = {
   startOnLoad: false,
@@ -18,75 +20,6 @@ mermaid.initialize(MERMAID_DEFAULT_CONFIG)
 interface PreviewProps {
   content: string
   theme: 'light' | 'dark'
-}
-
-function rehypeAlert() {
-  return (tree: any) => {
-    visit(tree, 'element', (node: any) => {
-      if (node.tagName !== 'blockquote') return
-      const firstP = node.children?.find((c: any) => c.tagName === 'p')
-      if (!firstP) return
-      const firstText = firstP.children?.find((c: any) => c.type === 'text')
-      if (!firstText) return
-      const match = firstText.value.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/i)
-      if (!match) return
-      const type = match[1].toUpperCase()
-      node.properties = { ...node.properties, alertType: type }
-      firstText.value = firstText.value.slice(match[0].length).trimStart()
-      if (firstText.value === '' && firstP.children.length === 1) {
-        const idx = node.children.indexOf(firstP)
-        if (idx !== -1) node.children.splice(idx, 1)
-      } else {
-        firstP.properties = {
-          ...firstP.properties,
-          className: [...(firstP.properties?.className || []), 'alert-title'],
-        }
-      }
-    })
-  }
-}
-
-function rehypeSectionize() {
-  return (tree: any) => {
-    const stack: any[] = [{ level: 0, children: [] }]
-    for (const child of (tree.children || [])) {
-      const tag = child.tagName
-      const match = tag && tag.match(/^h([1-6])$/)
-      if (match) {
-        const level = parseInt(match[1])
-        while (stack.length > 1 && stack[stack.length - 1].level >= level) {
-          const section = stack.pop()!
-          stack[stack.length - 1].children.push(section.element)
-        }
-        const sectionChildren = [child]
-        stack.push({ level, element: { type: 'element', tagName: 'section', properties: {}, children: sectionChildren }, children: sectionChildren })
-      } else {
-        stack[stack.length - 1].children.push(child)
-      }
-    }
-    while (stack.length > 1) {
-      const section = stack.pop()!
-      stack[stack.length - 1].children.push(section.element)
-    }
-    tree.children = stack[0].children
-  }
-}
-
-function rehypeMermaid() {
-  return (tree: any) => {
-    visit(tree, 'element', (node: any, index: number | undefined, parent: any) => {
-      if (node.tagName === 'code' && node.properties?.className?.includes('language-mermaid') && parent && index !== undefined) {
-        node.tagName = 'div'
-        node.properties.className = ['mermaid']
-        parent.children[index] = {
-          type: 'element',
-          tagName: 'div',
-          properties: { className: ['mermaid-wrap'] },
-          children: [node],
-        }
-      }
-    })
-  }
 }
 
 function CodeBlock({ children }: { children: React.ReactNode }) {
@@ -174,17 +107,17 @@ function MermaidBlock({ children, theme }: { children: React.ReactNode; theme: '
 
 function CollapsibleSection({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
+  const toggle = useCallback(() => setCollapsed(c => !c), [])
   const childrenArr = React.Children.toArray(children)
   const headingIdx = childrenArr.findIndex(
     child => React.isValidElement(child) && typeof child.type === 'string' && /^h[1-6]$/.test(child.type)
   )
   if (headingIdx === -1) return <section>{children}</section>
-  const heading = childrenArr[headingIdx] as React.ReactElement<{ children?: React.ReactNode }>
+  const heading = childrenArr[headingIdx] as React.ReactElement<React.HTMLAttributes<HTMLElement>>
   const content = childrenArr.slice(headingIdx + 1)
-  const toggle = useCallback(() => setCollapsed(c => !c), [])
   return (
     <section data-collapsed={collapsed || undefined}>
-      {React.cloneElement(heading, { onClick: toggle, className: `collapsible-heading${collapsed ? ' collapsed' : ''}` } as any,
+      {React.cloneElement(heading, { onClick: toggle, className: `collapsible-heading${collapsed ? ' collapsed' : ''}` },
         <ChevronDown key="collapse-icon" size={16} className={`collapse-icon${collapsed ? ' collapsed' : ''}`} />,
         ...React.Children.toArray(heading.props.children),
       )}
@@ -279,7 +212,8 @@ export default React.memo(function Preview({ content, theme }: PreviewProps) {
         components={{
           section: ({ children }) => <CollapsibleSection>{children}</CollapsibleSection>,
           blockquote: ({ node, children }) => {
-            const alertType = (node as any)?.properties?.alertType
+            const properties = (node as unknown as Record<string, unknown>)?.properties as Record<string, string> | undefined
+            const alertType = properties?.alertType
             if (alertType) {
               return (
                 <blockquote data-alert={alertType}>

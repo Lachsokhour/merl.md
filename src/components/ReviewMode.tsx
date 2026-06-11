@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Moon, Sun, Minus, Plus, EyeOff } from 'lucide-react'
 import Preview from './Preview'
+import ErrorBoundary from './ErrorBoundary'
 import FontSettings from './FontSettings'
 import AccentPicker from './AccentPicker'
 
@@ -67,7 +68,9 @@ export default function ReviewMode({
         <div className="review-content-wrap">
           {title && <div className="review-title">{title}</div>}
       <div ref={contentRef} className="review-content">
-        <Preview content={content} theme={theme} />
+        <ErrorBoundary>
+          <Preview content={content} theme={theme} />
+        </ErrorBoundary>
       </div>
     </div>
     <div className="review-sidebar">
