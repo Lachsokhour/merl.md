@@ -335,33 +335,33 @@ export default function App() {
       max-width: 800px;
       margin: 0 auto;
       padding: 48px 32px;
-      line-height: 1.75;
+      line-height: 1.7;
       font-size: 16px;
       -webkit-font-smoothing: antialiased;
       scroll-behavior: smooth;
     }
     h1, h2, h3, h4, h5, h6 {
-      margin-top: 1.8em;
-      margin-bottom: 0.4em;
+      margin-top: 1.2em;
+      margin-bottom: 0.3em;
       font-weight: 700;
       line-height: 1.3;
       letter-spacing: -0.02em;
     }
-    h1 { font-size: 2.2em; border-bottom: 2px solid ${border}; padding-bottom: 0.3em; }
-    h2 { font-size: 1.65em; padding-bottom: 0.25em; border-bottom: 1px solid ${border}; }
-    h3 { font-size: 1.3em; }
-    h4 { font-size: 1.1em; }
-    h5 { font-size: 1em; color: ${text2}; }
-    h6 { font-size: 0.9em; color: ${text2}; font-weight: 400; }
+    h1 { font-size: 1.8em; border-bottom: 2px solid ${border}; padding-bottom: 0.2em; }
+    h2 { font-size: 1.4em; padding-bottom: 0.15em; border-bottom: 1px solid ${border}; }
+    h3 { font-size: 1.15em; }
+    h4 { font-size: 1em; }
+    h5 { font-size: 0.9em; color: ${text2}; }
+    h6 { font-size: 0.85em; color: ${text2}; font-weight: 400; }
     :is(h1,h2,h3,h4,h5,h6):target { animation: heading-highlight 2s ease-out; }
     @keyframes heading-highlight { 0% { background-color: color-mix(in srgb, ${accent} 20%, transparent); } 100% { background-color: transparent; } }
-    p { margin: 0.85em 0; }
+    p { margin: 0.65em 0; }
     a { color: ${accent}; text-decoration: none; font-weight: 500; }
     a:hover { text-decoration: underline; }
-    img { max-width: 100%; border-radius: 10px; margin: 1.2em 0; display: block; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-    hr { border: none; height: 1px; margin: 2.5em 0; background: linear-gradient(90deg, transparent, ${border}, transparent); }
+    img { max-width: 100%; border-radius: 8px; margin: 0.85em 0; display: block; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+    hr { border: none; height: 1px; margin: 1.5em 0; background: linear-gradient(90deg, transparent, ${border}, transparent); }
     blockquote {
-      margin: 1.2em 0;
+      margin: 0.85em 0;
       padding: 0.8em 1.2em 0.8em 1.8em;
       position: relative;
       background: ${surface2};
@@ -410,8 +410,8 @@ export default function App() {
     blockquote[data-alert="WARNING"] .alert-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f59e0b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3Cpath d='M10.29 3.86l-8.1 14c-.6 1.04.15 2.14 1.21 2.14h16.2c1.06 0 1.81-1.1 1.21-2.14l-8.1-14c-.6-1.04-1.82-1.04-2.42 0'/%3E%3C/svg%3E"); }
     blockquote[data-alert="CAUTION"] { --alert-color: #ef4444; }
     blockquote[data-alert="CAUTION"] .alert-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M15 9l-6 6'/%3E%3Cpath d='M9 9l6 6'/%3E%3C/svg%3E"); }
-    ul, ol { margin: 0.7em 0; padding-left: 1.8em; }
-    li { margin: 0.35em 0; line-height: 1.7; }
+    ul, ol { margin: 0.5em 0; padding-left: 1.8em; }
+    li { margin: 0.2em 0; line-height: 1.7; }
     li::marker { color: ${accent}; }
     ul > li::marker { content: '\\2022'; font-size: 1.15em; }
     ul ul > li::marker { content: '\\25E6'; font-size: 1.1em; }
@@ -445,7 +445,7 @@ export default function App() {
       transform: rotate(45deg);
     }
     pre {
-      margin: 1.4em 0;
+      margin: 1em 0;
       padding: 48px 24px 20px;
       border-radius: 12px;
       background: #0f172a;
@@ -498,7 +498,7 @@ export default function App() {
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
-      margin: 1.2em 0;
+      margin: 0.9em 0;
       font-size: 14px;
       border-radius: 10px;
       overflow: hidden;
@@ -530,8 +530,8 @@ export default function App() {
       box-shadow: 0 1px 0 ${border};
     }
     .mermaid {
-      margin: 1.6em 0;
-      padding: 24px;
+      margin: 1em 0;
+      padding: 16px 24px;
       border-radius: 12px;
       background: color-mix(in srgb, ${accent} 4%, ${bg});
       border: 1px solid color-mix(in srgb, ${accent} 20%, ${border});
