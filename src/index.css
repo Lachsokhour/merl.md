@@ -697,13 +697,13 @@ body {
 }
 
 .preview h1 {
-  font-size: 2.2em;
+  font-size: 1.8em;
   border-bottom: 2px solid var(--border);
   padding-bottom: 0.2em;
 }
 
 .preview h2 {
-  font-size: 1.65em;
+  font-size: 1.4em;
   padding-bottom: 0.15em;
 }
 
@@ -719,7 +719,7 @@ body {
 }
 
 .preview h3 {
-  font-size: 1.3em;
+  font-size: 1.15em;
 }
 
 .preview h3::before {
@@ -734,9 +734,9 @@ body {
   opacity: 0.5;
 }
 
-.preview h4 { font-size: 1.1em; }
-.preview h5 { font-size: 1em; color: var(--text2); }
-.preview h6 { font-size: 0.9em; color: var(--text2); font-weight: 400; }
+.preview h4 { font-size: 1em; }
+.preview h5 { font-size: 0.9em; color: var(--text2); }
+.preview h6 { font-size: 0.85em; color: var(--text2); font-weight: 400; }
 
 .preview :is(h1, h2, h3, h4, h5, h6):target {
   animation: heading-highlight 2s ease-out;
@@ -1400,9 +1400,9 @@ section[data-collapsed] {
     font-size: 13px;
   }
 
-  .preview h1 { font-size: 1.7em; }
-  .preview h2 { font-size: 1.35em; }
-  .preview h3 { font-size: 1.15em; }
+  .preview h1 { font-size: 1.45em; }
+  .preview h2 { font-size: 1.2em; }
+  .preview h3 { font-size: 1.05em; }
   .preview table { font-size: 12px; }
   .preview th,
   .preview td { padding: 8px 10px; }
