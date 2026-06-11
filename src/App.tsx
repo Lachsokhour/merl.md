@@ -589,6 +589,23 @@ ${innerHtml}
     setToast('HTML copied to clipboard')
   }, [generateHtml])
 
+  const handleDownloadMd = useCallback(() => {
+    const d = new Date()
+    const ts = String(d.getFullYear()) +
+      String(d.getMonth() + 1).padStart(2, '0') +
+      String(d.getDate()).padStart(2, '0') + '-' +
+      String(d.getHours()).padStart(2, '0') +
+      String(d.getMinutes()).padStart(2, '0') +
+      String(d.getSeconds()).padStart(2, '0')
+    const blob = new Blob([content], { type: 'text/markdown' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = ts + '-merl-md.md'
+    a.click()
+    URL.revokeObjectURL(url)
+  }, [content])
+
   const chars = useMemo(() => content.length, [content])
   const words = useMemo(() => {
     const trimmed = content.trim()
@@ -632,6 +649,7 @@ ${innerHtml}
         onToggleTheme={toggleTheme}
         onOpenFile={handleOpenFile}
         onDownloadHtml={handleDownloadHtml}
+        onDownloadMd={handleDownloadMd}
         onCopyHtml={handleCopyHtml}
         onToggleReview={toggleReviewMode}
         chars={chars}
