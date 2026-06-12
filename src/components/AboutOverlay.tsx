@@ -75,15 +75,18 @@ export default function AboutOverlay() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {[
                 ['Live Preview', 'Split-pane editor with draggable divider'],
-                ['Full GFM', 'Tables, task lists, strikethrough, and more'],
+                ['Full GFM', 'Tables, task lists, alerts, and more'],
                 ['Collapsible Sections', 'Click headings to collapse/expand'],
+                ['GFM Alerts', 'Note, Tip, Warning, Caution, Important'],
                 ['Syntax Highlight', 'Atom-one-dark theme for 13+ languages'],
                 ['Mermaid Diagrams', 'Flowcharts, sequence, Gantt, and more'],
                 ['Bilingual Fonts', '13 English + 17 Khmer Google Fonts'],
                 ['Dark / Light', 'Smooth theme toggle with transitions'],
                 ['Custom Accents', '12 presets + custom color picker'],
                 ['Table of Contents', 'Auto-linked heading anchors'],
-                ['HTML Export', 'Self-contained, theme-aware output'],
+                ['Export HTML/PDF/Word', 'Self-contained HTML, A4 PDF, .doc'],
+                ['Copy HTML', 'One-click render to clipboard'],
+                ['Review Mode', 'Distraction-free full-screen reading'],
                 ['Responsive', 'Desktop, tablet, and mobile layouts'],
                 ['Persistent', 'All settings saved to localStorage'],
               ].map(([label, desc]) => (
