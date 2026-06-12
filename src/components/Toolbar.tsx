@@ -1,4 +1,4 @@
-import { Upload, Download, FileDown, ClipboardCopy, Eye, Moon, Sun, Minus, Plus, ChevronRight } from 'lucide-react'
+import { Upload, Download, FileDown, ClipboardCopy, Eye, Moon, Sun, Minus, Plus, ChevronRight, Printer, FileText } from 'lucide-react'
 import type { FileHandle } from '../types'
 import FontSettings from './FontSettings'
 import AccentPicker from './AccentPicker'
@@ -11,6 +11,8 @@ interface ToolbarProps {
   onOpenFile: (file: FileHandle) => void
   onDownloadHtml: () => void
   onDownloadMd: () => void
+  onDownloadPdf: () => void
+  onDownloadWord: () => void
   onCopyHtml: () => void
   onToggleReview: () => void
   chars: number
@@ -32,6 +34,8 @@ export default function Toolbar({
   onOpenFile,
   onDownloadHtml,
   onDownloadMd,
+  onDownloadPdf,
+  onDownloadWord,
   onCopyHtml,
   onToggleReview,
   chars,
@@ -82,6 +86,16 @@ export default function Toolbar({
         <button className="toolbar-btn" onClick={onDownloadMd} title="Download as .md">
           <FileDown size={15} />
           <span className="toolbar-btn-label">MD</span>
+        </button>
+
+        <button className="toolbar-btn" onClick={onDownloadPdf} title="Download as PDF">
+          <Printer size={15} />
+          <span className="toolbar-btn-label">PDF</span>
+        </button>
+
+        <button className="toolbar-btn" onClick={onDownloadWord} title="Download as Word">
+          <FileText size={15} />
+          <span className="toolbar-btn-label">Word</span>
         </button>
 
         <button className="toolbar-btn" onClick={onCopyHtml} title="Copy HTML to clipboard">

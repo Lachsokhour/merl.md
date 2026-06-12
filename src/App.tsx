@@ -450,7 +450,7 @@ export default function App() {
       padding: 48px 24px 20px;
       border-radius: 12px;
       background: #0f172a;
-      overflow-x: auto;
+      overflow: visible;
       font-size: 13.5px;
       line-height: 1.6;
       border: 1px solid rgba(255,255,255,0.1);
@@ -458,6 +458,8 @@ export default function App() {
       box-shadow: 0 2px 12px rgba(0,0,0,0.18);
       tab-size: 2;
       font-variant-ligatures: none;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
     pre::after {
       content: '';
@@ -590,6 +592,135 @@ ${innerHtml}
     setToast('HTML copied to clipboard')
   }, [generateHtml])
 
+  const handleDownloadPdf = useCallback(() => {
+    window.print()
+  }, [])
+
+  const generateWordHtml = useCallback(() => {
+    const previewEl = previewRef.current
+    if (!previewEl) return null
+    const clone = previewEl.cloneNode(true) as HTMLElement
+    clone.querySelectorAll('.block-header, .scroll-to-top, .collapse-icon').forEach(el => el.remove())
+    clone.querySelectorAll('.mermaid-wrap').forEach(el => {
+      if (el.querySelector(':scope > .mermaid-header')) {
+        const parent = el.parentNode
+        if (parent) {
+          while (el.firstChild) parent.insertBefore(el.firstChild, el)
+          el.remove()
+        }
+      }
+    })
+    clone.querySelectorAll('.mermaid-header').forEach(el => el.remove())
+    const innerHtml = clone.innerHTML
+    const pageTitle = fileName?.replace(/\.\w+$/, '') || 'document'
+    const accent = accentColor || '#6366f1'
+    return `<!DOCTYPE html>
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="UTF-8">
+<title>${pageTitle}</title>
+<link href="${buildGoogleFontsUrl(englishFont, khmerFont)}" rel="stylesheet">
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>100</w:Zoom>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+body { font-family: '${englishFont}', '${khmerFont}', sans-serif; margin: 0 auto; padding: 48px 32px; max-width: 800px; line-height: 1.7; font-size: 16px; color: #1a1a2e; }
+h1, h2, h3, h4, h5, h6 { margin-top: 1.2em; margin-bottom: 0.3em; font-weight: 700; line-height: 1.3; }
+h1 { font-size: 1.8em; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.2em; }
+h2 { font-size: 1.4em; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.15em; }
+h3 { font-size: 1.15em; }
+h4 { font-size: 1em; }
+h5 { font-size: 0.9em; color: #64748b; }
+h6 { font-size: 0.85em; color: #64748b; font-weight: 400; }
+p { margin: 0.65em 0; }
+a { color: ${accent}; font-weight: 500; }
+img { max-width: 100%; margin: 0.85em 0; }
+blockquote { margin: 0.85em 0; padding: 0.8em 1.2em 0.8em 1.8em; background: #f1f5f9; border-left: 4px solid ${accent}; color: #64748b; font-size: 0.95em; }
+blockquote p { margin: 0.35em 0; }
+blockquote[data-alert] { padding: 0.85em 1.2em 0.85em 2.8em; border: 1px solid #ccc; border-left-width: 4px; }
+blockquote[data-alert="NOTE"] { border-left-color: #3b82f6; }
+blockquote[data-alert="TIP"] { border-left-color: #22c55e; }
+blockquote[data-alert="IMPORTANT"] { border-left-color: #8b5cf6; }
+blockquote[data-alert="WARNING"] { border-left-color: #f59e0b; }
+blockquote[data-alert="CAUTION"] { border-left-color: #ef4444; }
+.alert-title { font-weight: 700; font-size: 0.7em; text-transform: uppercase; color: ${accent}; }
+ul, ol { margin: 0.5em 0; padding-left: 1.8em; }
+li { margin: 0.2em 0; line-height: 1.7; }
+pre {
+  margin: 1em 0;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  background: #f4f4f4;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12pt;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+pre code {
+  background: none !important;
+  padding: 0 !important;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12pt;
+  color: #1f2937 !important;
+}
+code:not(pre code) {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.88em;
+  color: ${accent};
+  border: 1px solid #e2e8f0;
+}
+table { width: 100%; border-collapse: collapse; margin: 0.9em 0; font-size: 14px; border: 1px solid #e2e8f0; }
+th, td { padding: 10px 14px; border: 1px solid #e2e8f0; text-align: left; }
+th { background: #f1f5f9; font-weight: 600; }
+hr { border: none; border-top: 1px solid #e2e8f0; margin: 1.5em 0; }
+.hljs { background: transparent !important; color: #1f2937; }
+.hljs-keyword { color: #7c3aed; }
+.hljs-string { color: #059669; }
+.hljs-number { color: #d97706; }
+.hljs-title { color: #2563eb; }
+.hljs-built_in { color: #0891b2; }
+.hljs-attr { color: #b45309; }
+.hljs-params { color: #374151; }
+.hljs-comment { color: #6b7280; font-style: italic; }
+.hljs-function { color: #2563eb; }
+kbd { padding: 2px 8px; border: 1px solid #e2e8f0; background: #fff; font-family: 'Courier New', Courier, monospace; font-size: 0.85em; }
+.mermaid { text-align: center; padding: 16px; border: 1px solid #e2e8f0; background: #fafafa; margin: 1em 0; }
+.mermaid svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+${innerHtml}
+</body>
+</html>`
+  }, [fileName, englishFont, khmerFont, accentColor])
+
+  const handleDownloadWord = useCallback(() => {
+    const html = generateWordHtml()
+    if (!html) return
+    const d = new Date()
+    const ts = String(d.getFullYear()) +
+      String(d.getMonth() + 1).padStart(2, '0') +
+      String(d.getDate()).padStart(2, '0') + '-' +
+      String(d.getHours()).padStart(2, '0') +
+      String(d.getMinutes()).padStart(2, '0') +
+      String(d.getSeconds()).padStart(2, '0')
+    const blob = new Blob([html], { type: 'application/msword' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = ts + '-merl-md.doc'
+    a.click()
+    URL.revokeObjectURL(url)
+  }, [generateWordHtml])
+
   const handleDownloadMd = useCallback(() => {
     const d = new Date()
     const ts = String(d.getFullYear()) +
@@ -651,6 +782,8 @@ ${innerHtml}
         onOpenFile={handleOpenFile}
         onDownloadHtml={handleDownloadHtml}
         onDownloadMd={handleDownloadMd}
+        onDownloadPdf={handleDownloadPdf}
+        onDownloadWord={handleDownloadWord}
         onCopyHtml={handleCopyHtml}
         onToggleReview={toggleReviewMode}
         chars={chars}
