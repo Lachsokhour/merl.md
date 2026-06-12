@@ -16,12 +16,16 @@ A lightweight, bilingual (English/Khmer) markdown previewer with live rendering,
 - **Custom accent color** — 12 preset swatches + custom color picker; affects links, checkboxes, inline code, header underlines, blockquote bars, and more
 - **Bilingual fonts** — 13 English fonts + 17 Khmer fonts from Google Fonts, loaded dynamically
 - **Preview font zoom** — ±1px adjustable (12–24px), persisted
-- **File operations** — open `.md` files (via button or drag-and-drop onto editor pane), download rendered HTML (self-contained, theme-aware)
+- **Export formats** — HTML (self-contained, theme-aware), Markdown, PDF (`window.print()` with `@page A4`), Word (`.doc` via HTML template)
+- **Copy HTML** — one-click copy of rendered HTML to clipboard with toast notification
+- **Review mode** — distraction-free full-screen reading with progress bar, responsive sidebar/bottom bar, Esc to exit
+- **File operations** — open `.md` files (via button or drag-and-drop onto editor pane)
 - **Paste from clipboard** — paste button in editor pane header inserts at cursor position
 - **Drag-and-drop** — drop `.md` files directly onto the editor pane; old content is cleared, file name shown
 - **Enhanced text selection** — selection highlight uses your custom accent color in both light/dark themes
 - **Responsive** — desktop (side-by-side), tablet (icon-only toolbar), mobile (tabbed editor/preview)
 - **All settings persisted** — fonts, accent color, theme, split position, font size, editor content via localStorage
+- **Error resilience** — ErrorBoundary wraps the preview pane to catch rendering crashes gracefully
 
 ## Tech Stack
 
@@ -61,6 +65,10 @@ Output goes to `dist/`.
 | Edit markdown | Type in the left pane — preview updates instantly |
 | Open `.md` file | Click **Open** (or the upload icon) |
 | Download HTML | Click **HTML** — saves `YYYYMMDD-HHmmss-merl-md.html` |
+| Download PDF | Click **PDF** (Printer icon) — opens browser print dialog with A4 layout |
+| Download Word | Click **Word** (FileText icon) — saves as `.doc` (Word-compatible HTML) |
+| Copy HTML | Click **Copy HTML** — renders to clipboard with toast confirmation |
+| Review mode | Click **Review** (Eye icon) — full-screen reading, Esc to exit |
 | Toggle theme | Click **Dark** / **Light** |
 | Change accent | Click **Accent** (colored dot button) — pick a preset or custom color |
 | Change fonts | Click **Font** — select English and/or Khmer typeface |
@@ -104,19 +112,35 @@ The diagram is rendered live in the preview pane and adapts to light/dark mode. 
 
 ```
 src/
-├── App.tsx              # Main app — state, persistence, layout, HTML export
-├── index.css            # All styles (themes, layout, components, responsive)
-├── fonts.ts             # Font listings & Google Fonts URL builder
-├── types.ts             # TypeScript interfaces
-├── version.ts           # APP_VERSION constant (synced with package.json)
-├── main.tsx             # React entry point
-└── components/
-    ├── Editor.tsx       # Markdown textarea (forwardRef for cursor-aware paste)
-    ├── Preview.tsx      # ReactMarkdown + rehype plugins (mermaid, alerts, sections, slug)
-    ├── Toolbar.tsx      # Top toolbar with all controls
-    ├── FontSettings.tsx # Font selector popover (portal-based)
-    ├── AccentPicker.tsx # Accent color picker popover (portal-based)
-    └── AboutOverlay.tsx # App info overlay (portal-based)
+├── App.tsx                 # Main app — state, persistence, layout, HTML/Word export
+├── main.tsx                # React entry point
+├── index.css               # @import to all styles/*
+├── fonts.ts                # Font listings & Google Fonts URL builder
+├── types.ts                # TypeScript interfaces
+├── version.ts              # APP_VERSION constant
+├── styles/
+│   ├── theme.css           # CSS variables, reset, body
+│   ├── layout.css          # app-container, panes, divider, mobile-tabs
+│   ├── toolbar.css         # toolbar, buttons, font/color panels
+│   ├── editor.css          # textarea, pane header
+│   ├── preview.css         # markdown rendering, GFM alerts, code blocks, print styles
+│   ├── review.css          # review mode overlay, sidebar, bottom bar
+│   ├── overlay.css         # toast, scroll-to-top
+│   └── responsive.css      # all media queries
+├── components/
+│   ├── Editor.tsx          # Markdown textarea (forwardRef)
+│   ├── Preview.tsx         # ReactMarkdown + rehype plugins (mermaid, alerts, sections, slug)
+│   ├── Toolbar.tsx         # All toolbar controls (open, export, theme, fonts, accent, review)
+│   ├── FontSettings.tsx    # Font selector popover (portal-based)
+│   ├── AccentPicker.tsx    # Accent color picker popover (portal-based)
+│   ├── AboutOverlay.tsx    # App info overlay
+│   ├── ErrorBoundary.tsx   # Class component catching render errors
+│   ├── ReviewMode.tsx      # Full-screen reading mode
+│   └── Toast.tsx           # Auto-dismissing toast notifications (portal)
+└── rehype/
+    ├── alert.ts            # GFM alert > [!NOTE] etc.
+    ├── mermaid.ts          # Mermaid code block → <div class="mermaid">
+    └── sectionize.ts       # Heading → nested <section> elements
 ```
 
 ## Responsive Breakpoints
