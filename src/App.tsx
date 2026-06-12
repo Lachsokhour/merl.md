@@ -640,15 +640,26 @@ h6 { font-size: 0.85em; color: #64748b; font-weight: 400; }
 p { margin: 0.65em 0; }
 a { color: ${accent}; font-weight: 500; }
 img { max-width: 100%; margin: 0.85em 0; }
-blockquote { margin: 0.85em 0; padding: 0.8em 1.2em 0.8em 1.8em; background: #f1f5f9; border-left: 4px solid ${accent}; color: #64748b; font-size: 0.95em; }
+blockquote { margin: 0.85em 0; padding: 0.8em 1.2em 0.8em 2em; background: #f1f5f9; border-left: 4px solid ${accent}; color: #475569; font-size: 0.95em; }
 blockquote p { margin: 0.35em 0; }
-blockquote[data-alert] { padding: 0.85em 1.2em 0.85em 2.8em; border: 1px solid #ccc; border-left-width: 4px; }
-blockquote[data-alert="NOTE"] { border-left-color: #3b82f6; }
-blockquote[data-alert="TIP"] { border-left-color: #22c55e; }
-blockquote[data-alert="IMPORTANT"] { border-left-color: #8b5cf6; }
-blockquote[data-alert="WARNING"] { border-left-color: #f59e0b; }
-blockquote[data-alert="CAUTION"] { border-left-color: #ef4444; }
-.alert-title { font-weight: 700; font-size: 0.7em; text-transform: uppercase; color: ${accent}; }
+.alert-icon { display: inline-block; width: 18px; height: 18px; vertical-align: middle; margin-right: 6px; background-size: contain; background-repeat: no-repeat; background-position: center; }
+.alert-title { font-weight: 700; font-size: 0.7em; text-transform: uppercase; margin-bottom: 0.3em; }
+blockquote[data-alert] { padding: 0.85em 1.2em 0.85em 2.6em; border: 1px solid #d1d5db; }
+blockquote[data-alert="NOTE"] { border-left: 4px solid #3b82f6; }
+blockquote[data-alert="NOTE"] .alert-title { color: #3b82f6; }
+blockquote[data-alert="NOTE"] .alert-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E"); }
+blockquote[data-alert="TIP"] { border-left: 4px solid #22c55e; }
+blockquote[data-alert="TIP"] .alert-title { color: #22c55e; }
+blockquote[data-alert="TIP"] .alert-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322c55e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18h6'/%3E%3Cpath d='M10 22h4'/%3E%3Cpath d='M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14'/%3E%3C/svg%3E"); }
+blockquote[data-alert="IMPORTANT"] { border-left: 4px solid #8b5cf6; }
+blockquote[data-alert="IMPORTANT"] .alert-title { color: #8b5cf6; }
+blockquote[data-alert="IMPORTANT"] .alert-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 8v4'/%3E%3Cpath d='M12 16h.01'/%3E%3C/svg%3E"); }
+blockquote[data-alert="WARNING"] { border-left: 4px solid #f59e0b; }
+blockquote[data-alert="WARNING"] .alert-title { color: #f59e0b; }
+blockquote[data-alert="WARNING"] .alert-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f59e0b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3Cpath d='M10.29 3.86l-8.1 14c-.6 1.04.15 2.14 1.21 2.14h16.2c1.06 0 1.81-1.1 1.21-2.14l-8.1-14c-.6-1.04-1.82-1.04-2.42 0'/%3E%3C/svg%3E"); }
+blockquote[data-alert="CAUTION"] { border-left: 4px solid #ef4444; }
+blockquote[data-alert="CAUTION"] .alert-title { color: #ef4444; }
+blockquote[data-alert="CAUTION"] .alert-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M15 9l-6 6'/%3E%3Cpath d='M9 9l6 6'/%3E%3C/svg%3E"); }
 ul, ol { margin: 0.5em 0; padding-left: 1.8em; }
 li { margin: 0.2em 0; line-height: 1.7; }
 pre {
